@@ -3,6 +3,7 @@ package rcr.ui;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import rcr.ui.classical.ClassicalLogicController;
 import rcr.ui.defaut.DefaultLogicController;
 import rcr.ui.modal.ModalLogicController;
 
@@ -21,6 +22,14 @@ public class DashboardController {
         Stage stage = new Stage();
         stage.setTitle("Logique des Défauts — Extensions de Reiter");
         stage.setScene(new Scene(new DefaultLogicController().buildUI(), 920, 680));
+        stage.show();
+    }
+
+    @FXML
+    public void openClassical() {
+        Stage stage = new Stage();
+        stage.setTitle("Logique Classique — Propositionnelle & Prédicats");
+        stage.setScene(new Scene(new ClassicalLogicController().buildUI(), 980, 720));
         stage.show();
     }
 }

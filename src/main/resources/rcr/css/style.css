@@ -137,6 +137,32 @@
     -fx-background-color: #e0c4ff;
 }
 
+/* Card — Logique Classique (red) */
+.card-classique {
+    -fx-background-color: #1e1e2e;
+    -fx-border-color: #f38ba8;
+    -fx-effect: dropshadow(gaussian, #f38ba855, 12, 0, 0, 0);
+}
+
+.card-classique:hover {
+    -fx-background-color: #2d1b24;
+    -fx-effect: dropshadow(gaussian, #f38ba8bb, 22, 0, 0, 0);
+}
+
+.card-icon-classique {
+    -fx-font-size: 34px;
+    -fx-text-fill: #f38ba8;
+}
+
+.btn-classique {
+    -fx-background-color: #f38ba8;
+    -fx-text-fill: #1e1e2e;
+}
+
+.btn-classique:hover {
+    -fx-background-color: #ffb3c6;
+}
+
 /* ---- Footer ---- */
 .footer {
     -fx-font-size: 11px;
