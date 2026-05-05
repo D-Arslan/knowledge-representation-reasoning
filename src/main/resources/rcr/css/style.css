@@ -1,0 +1,216 @@
+/* ============================================================
+   RCR1 — Dashboard stylesheet  (Catppuccin Mocha palette)
+   ============================================================ */
+
+/* ---- Root ---- */
+.root-pane {
+    -fx-background-color: #1e1e2e;
+}
+
+/* ---- Header ---- */
+.header {
+    -fx-background-color: #181825;
+    -fx-border-color: #313244;
+    -fx-border-width: 0 0 1 0;
+}
+
+.header-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #cdd6f4;
+}
+
+.header-sub {
+    -fx-font-size: 13px;
+    -fx-text-fill: #6c7086;
+}
+
+/* ---- Card grid ---- */
+.card-grid {
+    -fx-background-color: #1e1e2e;
+}
+
+/* Base card */
+.card {
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-border-width: 2;
+    -fx-padding: 28 20 28 20;
+    -fx-cursor: hand;
+}
+
+/* Card — Logique Modale (blue) */
+.card-modal {
+    -fx-background-color: #1e1e2e;
+    -fx-border-color: #89b4fa;
+    -fx-effect: dropshadow(gaussian, #89b4fa55, 12, 0, 0, 0);
+}
+
+.card-modal:hover {
+    -fx-background-color: #1a2540;
+    -fx-effect: dropshadow(gaussian, #89b4fabb, 22, 0, 0, 0);
+}
+
+/* Card — Logique des Défauts (lavender) */
+.card-defaut {
+    -fx-background-color: #1e1e2e;
+    -fx-border-color: #cba6f7;
+    -fx-effect: dropshadow(gaussian, #cba6f755, 12, 0, 0, 0);
+}
+
+.card-defaut:hover {
+    -fx-background-color: #27203a;
+    -fx-effect: dropshadow(gaussian, #cba6f7bb, 22, 0, 0, 0);
+}
+
+/* Card — disabled */
+.card-disabled {
+    -fx-background-color: #181825;
+    -fx-border-color: #313244;
+    -fx-border-radius: 14;
+    -fx-background-radius: 14;
+    -fx-padding: 28 20 28 20;
+    -fx-opacity: 0.45;
+}
+
+/* ---- Card content ---- */
+.card-icon {
+    -fx-font-size: 34px;
+    -fx-text-fill: #89b4fa;
+}
+
+.card-icon-disabled {
+    -fx-font-size: 34px;
+    -fx-text-fill: #45475a;
+}
+
+.card-title {
+    -fx-font-size: 19px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #cdd6f4;
+}
+
+.card-title-disabled {
+    -fx-font-size: 19px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #585b70;
+}
+
+.card-desc {
+    -fx-font-size: 13px;
+    -fx-text-fill: #a6adc8;
+    -fx-text-alignment: center;
+    -fx-alignment: center;
+}
+
+.card-soon {
+    -fx-font-size: 13px;
+    -fx-text-fill: #585b70;
+    -fx-font-style: italic;
+}
+
+/* ---- Buttons ---- */
+.card-btn {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 36;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-border-radius: 8;
+}
+
+.btn-modal {
+    -fx-background-color: #89b4fa;
+    -fx-text-fill: #1e1e2e;
+}
+
+.btn-modal:hover {
+    -fx-background-color: #b4d0ff;
+}
+
+.btn-defaut {
+    -fx-background-color: #cba6f7;
+    -fx-text-fill: #1e1e2e;
+}
+
+.btn-defaut:hover {
+    -fx-background-color: #e0c4ff;
+}
+
+/* ---- Footer ---- */
+.footer {
+    -fx-font-size: 11px;
+    -fx-text-fill: #45475a;
+    -fx-background-color: #181825;
+    -fx-alignment: center;
+}
+
+/* ---- Tab pane styling ---- */
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: #181825;
+}
+
+.tab-pane .tab {
+    -fx-background-color: #313244;
+    -fx-text-fill: #a6adc8;
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color: #1e1e2e;
+    -fx-text-fill: #cdd6f4;
+}
+
+.tab-pane .tab .tab-label {
+    -fx-text-fill: #a6adc8;
+    -fx-font-size: 13px;
+}
+
+.tab-pane .tab:selected .tab-label {
+    -fx-text-fill: #cdd6f4;
+    -fx-font-weight: bold;
+}
+
+/* ---- ScrollBar ---- */
+.scroll-bar {
+    -fx-background-color: #181825;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #45475a;
+    -fx-background-radius: 4;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #585b70;
+}
+
+/* ---- ComboBox ---- */
+.combo-box {
+    -fx-background-color: #313244;
+    -fx-text-fill: #cdd6f4;
+    -fx-prompt-text-fill: #6c7086;
+}
+
+.combo-box .list-cell {
+    -fx-background-color: #313244;
+    -fx-text-fill: #cdd6f4;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: #313244;
+}
+
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #45475a;
+}
+
+/* ---- TextArea ---- */
+.text-area .content {
+    -fx-background-color: #181825;
+}
+
+/* ---- SplitPane divider ---- */
+.split-pane > .split-pane-divider {
+    -fx-background-color: #313244;
+    -fx-padding: 0 1;
+}

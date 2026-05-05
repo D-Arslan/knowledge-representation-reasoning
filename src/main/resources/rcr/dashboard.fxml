@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="rcr.ui.DashboardController"
+            prefWidth="900" prefHeight="650"
+            styleClass="root-pane">
+
+    <!-- ===== HEADER ===== -->
+    <top>
+        <VBox styleClass="header" alignment="CENTER">
+            <padding><Insets top="28" bottom="28" left="40" right="40"/></padding>
+            <Label text="RCR1 — Logiques Formelles" styleClass="header-title"/>
+            <Label text="Master 1 SII · USTHB · Représentation des Connaissances et Raisonnement"
+                   styleClass="header-sub"/>
+        </VBox>
+    </top>
+
+    <!-- ===== CARD GRID ===== -->
+    <center>
+        <GridPane hgap="28" vgap="28" alignment="CENTER" styleClass="card-grid">
+            <padding><Insets top="50" bottom="50" left="80" right="80"/></padding>
+
+            <!-- Card 1 — Logique Modale -->
+            <VBox GridPane.columnIndex="0" GridPane.rowIndex="0"
+                  prefWidth="330" prefHeight="230"
+                  styleClass="card,card-modal" alignment="CENTER" spacing="14">
+                <Label text="◻  ◇" styleClass="card-icon"/>
+                <Label text="Logique Modale" styleClass="card-title"/>
+                <Label text="Modèles de Kripke · Nécessité · Possibilité"
+                       styleClass="card-desc" wrapText="true"/>
+                <Button text="Lancer  →" onAction="#openModal"
+                        styleClass="card-btn,btn-modal"/>
+            </VBox>
+
+            <!-- Card 2 — Logique des Défauts -->
+            <VBox GridPane.columnIndex="1" GridPane.rowIndex="0"
+                  prefWidth="330" prefHeight="230"
+                  styleClass="card,card-defaut" alignment="CENTER" spacing="14">
+                <Label text="⊣" styleClass="card-icon"/>
+                <Label text="Logique des Défauts" styleClass="card-title"/>
+                <Label text="Extensions de Reiter · Non-monotonie"
+                       styleClass="card-desc" wrapText="true"/>
+                <Button text="Lancer  →" onAction="#openDefaut"
+                        styleClass="card-btn,btn-defaut"/>
+            </VBox>
+
+            <!-- Card 3 — Réseaux Sémantiques (grisé) -->
+            <VBox GridPane.columnIndex="0" GridPane.rowIndex="1"
+                  prefWidth="330" prefHeight="230"
+                  styleClass="card,card-disabled" alignment="CENTER" spacing="14">
+                <Label text="◎" styleClass="card-icon-disabled"/>
+                <Label text="Réseaux Sémantiques" styleClass="card-title-disabled"/>
+                <Label text="Bientôt disponible" styleClass="card-soon"/>
+            </VBox>
+
+            <!-- Card 4 — Logique de Description (grisé) -->
+            <VBox GridPane.columnIndex="1" GridPane.rowIndex="1"
+                  prefWidth="330" prefHeight="230"
+                  styleClass="card,card-disabled" alignment="CENTER" spacing="14">
+                <Label text="◎" styleClass="card-icon-disabled"/>
+                <Label text="Logique de Description" styleClass="card-title-disabled"/>
+                <Label text="Bientôt disponible" styleClass="card-soon"/>
+            </VBox>
+
+        </GridPane>
+    </center>
+
+    <!-- ===== FOOTER ===== -->
+    <bottom>
+        <Label text="TweetyProject 1.27 · JavaFX 17.0.2 · Java 11"
+               styleClass="footer" maxWidth="Infinity" alignment="CENTER">
+            <padding><Insets top="10" bottom="12"/></padding>
+        </Label>
+    </bottom>
+
+</BorderPane>
