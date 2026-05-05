@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>rcr</groupId>
+    <artifactId>projet_RCR</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>Projet RCR - Logiques formelles</name>
+    <description>Implémentation de 4 formalismes logiques : Modale, Défaut, Réseaux sémantiques, Logique de description</description>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <tweety.version>1.27</tweety.version>
+        <owlapi.version>4.5.29</owlapi.version>
+    </properties>
+
+    <!--
+        Pas de repo custom nécessaire :
+        - tweety-full:1.28 est sur Maven Central
+        - owlapi et HermiT sont sur Maven Central
+    -->
+
+    <dependencies>
+
+        <!-- ============================================ -->
+        <!--   TWEETY FULL                               -->
+        <!--   Fat-jar officiel incluant TOUS les        -->
+        <!--   modules Tweety (logics-ml, logics-dl,     -->
+        <!--   logics-fol, logics-pl, graphs, commons…)  -->
+        <!--   Disponible sur Maven Central              -->
+        <!-- ============================================ -->
+        <dependency>
+            <groupId>org.tweetyproject</groupId>
+            <artifactId>tweety-full</artifactId>
+            <version>${tweety.version}</version>
+        </dependency>
+
+        <!-- ============================================ -->
+        <!--   OWL API                                   -->
+        <!--   Manipulation d'ontologies OWL             -->
+        <!-- ============================================ -->
+        <dependency>
+            <groupId>net.sourceforge.owlapi</groupId>
+            <artifactId>owlapi-distribution</artifactId>
+            <version>${owlapi.version}</version>
+        </dependency>
+
+        <!-- ============================================ -->
+        <!--   HermiT Reasoner                           -->
+        <!--   Raisonneur OWL DL pour logique de         -->
+        <!--   description                               -->
+        <!-- ============================================ -->
+        <dependency>
+            <groupId>net.sourceforge.owlapi</groupId>
+            <artifactId>org.semanticweb.hermit</artifactId>
+            <version>1.4.3.456</version>
+        </dependency>
+
+        <!-- ============================================ -->
+        <!--   JavaFX 17 — Interface graphique           -->
+        <!-- ============================================ -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>17.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>17.0.2</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <!-- Compilation Java 11 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+            </plugin>
+
+            <!-- Exécution directe : mvn exec:java -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <mainClass>rcr.Main</mainClass>
+                </configuration>
+            </plugin>
+
+            <!-- JavaFX : mvn javafx:run -->
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+                <configuration>
+                    <mainClass>rcr.MainApp</mainClass>
+                </configuration>
+            </plugin>
+
+            <!-- Fat-jar : mvn package → *-jar-with-dependencies.jar -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.6.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>rcr.Main</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>
