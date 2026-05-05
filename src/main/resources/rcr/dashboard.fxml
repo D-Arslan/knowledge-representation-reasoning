@@ -10,7 +10,7 @@
 
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="rcr.ui.DashboardController"
-            prefWidth="900" prefHeight="650"
+            prefWidth="900" prefHeight="700"
             styleClass="root-pane">
 
     <!-- ===== HEADER ===== -->
@@ -26,11 +26,11 @@
     <!-- ===== CARD GRID ===== -->
     <center>
         <GridPane hgap="28" vgap="28" alignment="CENTER" styleClass="card-grid">
-            <padding><Insets top="50" bottom="50" left="80" right="80"/></padding>
+            <padding><Insets top="40" bottom="40" left="60" right="60"/></padding>
 
             <!-- Card 1 — Logique Modale -->
             <VBox GridPane.columnIndex="0" GridPane.rowIndex="0"
-                  prefWidth="330" prefHeight="230"
+                  prefWidth="310" prefHeight="210"
                   styleClass="card,card-modal" alignment="CENTER" spacing="14">
                 <Label text="◻  ◇" styleClass="card-icon"/>
                 <Label text="Logique Modale" styleClass="card-title"/>
@@ -42,7 +42,7 @@
 
             <!-- Card 2 — Logique des Défauts -->
             <VBox GridPane.columnIndex="1" GridPane.rowIndex="0"
-                  prefWidth="330" prefHeight="230"
+                  prefWidth="310" prefHeight="210"
                   styleClass="card,card-defaut" alignment="CENTER" spacing="14">
                 <Label text="⊣" styleClass="card-icon"/>
                 <Label text="Logique des Défauts" styleClass="card-title"/>
@@ -52,18 +52,21 @@
                         styleClass="card-btn,btn-defaut"/>
             </VBox>
 
-            <!-- Card 3 — Réseaux Sémantiques (grisé) -->
+            <!-- Card 3 — Logique Classique -->
             <VBox GridPane.columnIndex="0" GridPane.rowIndex="1"
-                  prefWidth="330" prefHeight="230"
-                  styleClass="card,card-disabled" alignment="CENTER" spacing="14">
-                <Label text="◎" styleClass="card-icon-disabled"/>
-                <Label text="Réseaux Sémantiques" styleClass="card-title-disabled"/>
-                <Label text="Bientôt disponible" styleClass="card-soon"/>
+                  prefWidth="310" prefHeight="210"
+                  styleClass="card,card-classique" alignment="CENTER" spacing="14">
+                <Label text="∀∃" styleClass="card-icon-classique"/>
+                <Label text="Logique Classique" styleClass="card-title"/>
+                <Label text="Propositionnelle CNF · Prédicats · SAT4J"
+                       styleClass="card-desc" wrapText="true"/>
+                <Button text="Lancer  →" onAction="#openClassical"
+                        styleClass="card-btn,btn-classique"/>
             </VBox>
 
             <!-- Card 4 — Logique de Description (grisé) -->
             <VBox GridPane.columnIndex="1" GridPane.rowIndex="1"
-                  prefWidth="330" prefHeight="230"
+                  prefWidth="310" prefHeight="210"
                   styleClass="card,card-disabled" alignment="CENTER" spacing="14">
                 <Label text="◎" styleClass="card-icon-disabled"/>
                 <Label text="Logique de Description" styleClass="card-title-disabled"/>
