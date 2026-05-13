@@ -163,6 +163,32 @@
     -fx-background-color: #ffb3c6;
 }
 
+/* Card — Logique de Description (green) */
+.card-description {
+    -fx-background-color: #1e1e2e;
+    -fx-border-color: #a6e3a1;
+    -fx-effect: dropshadow(gaussian, #a6e3a155, 12, 0, 0, 0);
+}
+
+.card-description:hover {
+    -fx-background-color: #1a2d1a;
+    -fx-effect: dropshadow(gaussian, #a6e3a1bb, 22, 0, 0, 0);
+}
+
+.card-icon-description {
+    -fx-font-size: 34px;
+    -fx-text-fill: #a6e3a1;
+}
+
+.btn-description {
+    -fx-background-color: #a6e3a1;
+    -fx-text-fill: #1e1e2e;
+}
+
+.btn-description:hover {
+    -fx-background-color: #c3f0be;
+}
+
 /* ---- Footer ---- */
 .footer {
     -fx-font-size: 11px;

@@ -64,13 +64,16 @@
                         styleClass="card-btn,btn-classique"/>
             </VBox>
 
-            <!-- Card 4 — Logique de Description (grisé) -->
+            <!-- Card 4 — Logique de Description -->
             <VBox GridPane.columnIndex="1" GridPane.rowIndex="1"
                   prefWidth="310" prefHeight="210"
-                  styleClass="card,card-disabled" alignment="CENTER" spacing="14">
-                <Label text="◎" styleClass="card-icon-disabled"/>
-                <Label text="Logique de Description" styleClass="card-title-disabled"/>
-                <Label text="Bientôt disponible" styleClass="card-soon"/>
+                  styleClass="card,card-description" alignment="CENTER" spacing="14">
+                <Label text="⊑  ∃" styleClass="card-icon-description"/>
+                <Label text="Logique de Description" styleClass="card-title"/>
+                <Label text="OWL API · HermiT · Ontologies"
+                       styleClass="card-desc" wrapText="true"/>
+                <Button text="Lancer  →" onAction="#openDescription"
+                        styleClass="card-btn,btn-description"/>
             </VBox>
 
         </GridPane>
