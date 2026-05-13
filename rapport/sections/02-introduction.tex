@@ -1,0 +1,72 @@
+% ============================================================
+%  Chapitre 1 — Introduction
+% ============================================================
+\chapter{Introduction}
+
+\section{Contexte et motivation}
+
+La \textbf{Représentation des Connaissances et Raisonnement} (\textsc{rcr}) est
+une discipline fondamentale de l'intelligence artificielle dont l'objectif est de
+formaliser les connaissances d'un domaine de manière à permettre à un système
+informatique de raisonner automatiquement à partir de ces connaissances.
+
+Contrairement à la programmation classique qui encode des procédures explicites,
+la \textsc{rcr} permet de décrire \emph{ce que l'on sait} et de laisser un
+moteur d'inférence déduire \emph{ce qui en découle}. Cette approche déclarative
+est particulièrement adaptée aux domaines où les connaissances sont incomplètes,
+incertaines ou sujettes à des exceptions.
+
+Plusieurs formalismes ont été développés au fil des décennies, chacun avec ses
+forces propres : certains sont monotones et garantissent la cohérence logique
+(logique classique, logique de description, logique modale), d'autres sont
+non-monotones et permettent de réviser les conclusions face à de nouvelles
+informations (logique des défauts, réseaux sémantiques avec héritage à exceptions).
+
+\section{Objectifs du projet}
+
+Ce projet vise à :
+
+\begin{enumerate}
+  \item \textbf{Implémenter} cinq formalismes de représentation des connaissances
+        à l'aide de bibliothèques Java établies.
+  \item \textbf{Appliquer} chaque formalisme à deux domaines réels et concrets,
+        permettant une comparaison directe de leur expressivité.
+  \item \textbf{Démontrer} le phénomène de non-monotonie pour les formalismes
+        qui le supportent.
+  \item \textbf{Développer} une interface graphique unifiée permettant
+        d'interagir avec chaque raisonneur de manière pédagogique.
+\end{enumerate}
+
+\section{Domaines d'application}
+
+Deux domaines ont été choisis pour leur richesse sémantique et leur
+complémentarité :
+
+\begin{description}
+  \item[Industrie musicale algérienne] — Artistes (Soolking, Feu, Tif, Flenn),
+    labels (Universal, Believe), albums, certifications (or, platine),
+    relations contractuelles, collaborations internationales.
+    Ce domaine se prête naturellement à la modélisation de statuts
+    (artiste signé, indépendant, libre de droits) et de hiérarchies
+    (rappeur algérien $\sqsubseteq$ rappeur $\sqsubseteq$ artiste).
+
+  \item[Système judiciaire] — Magistrats (juge, procureur), avocats,
+    accusés (mineur, récidiviste, présumé innocent), infractions (crime, délit,
+    contravention), tribunaux (cour d'assises, tribunal correctionnel,
+    tribunal pour enfants).
+    Ce domaine illustre parfaitement les exceptions et les conflits de règles
+    (un mineur ayant commis un crime grave relève-t-il du tribunal des enfants
+    ou de la cour d'assises ?).
+\end{description}
+
+\section{Structure du rapport}
+
+\begin{description}
+  \item[Chapitre 2] présente l'architecture technique du projet (organisation
+        Maven, technologies, interface graphique).
+  \item[Chapitres 3 à 7] détaillent chacun des cinq formalismes :
+        fondements théoriques, implémentation, application aux deux domaines,
+        résultats.
+  \item[Chapitre 8] propose une comparaison transversale des formalismes.
+  \item[Chapitre 9] conclut et ouvre des perspectives.
+\end{description}

@@ -1,0 +1,93 @@
+% ============================================================
+%  Chapitre 9 — Conclusion
+% ============================================================
+\chapter{Conclusion}
+
+\section{Bilan}
+
+Ce projet a permis d'implémenter et de comparer cinq formalismes de
+représentation des connaissances et raisonnement, appliqués à deux domaines
+réels : l'industrie musicale algérienne et le système judiciaire.
+
+\medskip
+\noindent Les objectifs initiaux ont été atteints :
+
+\begin{enumerate}
+  \item \textbf{Implémentation complète} des quatre formalismes pris en charge
+        par le binôme : logique modale (TweetyProject), logique des défauts
+        (TweetyProject RDL), logique classique (SAT4J + FOL) et logique de
+        description (OWL API 4.5 + HermiT).
+
+  \item \textbf{Démonstration de la non-monotonie} pour la logique des défauts
+        (ajout de faits invalide des conclusions d'extension) et mise en
+        évidence de l'hypothèse du monde ouvert pour la logique de description.
+
+  \item \textbf{Interface graphique unifiée} permettant d'interagir avec chaque
+        formalisme, d'observer les résultats du raisonneur en temps réel et de
+        comparer les comportements.
+
+  \item \textbf{Cohérence inter-formalismes} : les mêmes individus (Soolking,
+        Ali, Karim…) sont représentés dans chaque formalisme, permettant une
+        comparaison directe de leur expressivité sur des cas concrets.
+\end{enumerate}
+
+\section{Difficultés rencontrées}
+
+\begin{description}
+  \item[OWA en logique de description] L'hypothèse du monde ouvert d'OWL~2
+        empêche de dériver l'absence d'une propriété à partir de son absence
+        dans l'ABox. Pour les concepts définis par un complément (ex :
+        ArtisteLibreDroits $\equiv$ Artiste $\dlinter$
+        $\dlcomp{\dlsome{\text{signe\_chez}}{\text{Label}}}$),
+        il a fallu recourir à des assertions explicites en ABox, analogues à
+        une hypothèse de monde fermé locale.
+
+  \item[Grounding dans Tweety RDL] Le calcul des extensions avec
+        \code{SimpleDefaultReasoner} nécessite un grounding préalable.
+        Avec plusieurs individus dans une même théorie, le \code{DefaultProcessTree}
+        devient exponentiel. La solution a été de construire une théorie
+        \emph{par individu}, ce qui rend le raisonnement tractable.
+
+  \item[Compatibilité JavaFX] Le démarrage de JavaFX~17 avec Java~11 requiert
+        une configuration spécifique du module-path Maven.
+        Le plugin \code{javafx-maven-plugin} a été utilisé pour encapsuler
+        cette configuration.
+
+  \item[HermiT et les axiomes de disjonction] La vérification de disjonction
+        entre deux classes via \code{isEntailed(OWLDisjointClassesAxiom)}
+        requiert que la disjonction soit déductible structurellement — elle
+        n'est pas déclarée implicitement, contrairement à l'intuition.
+\end{description}
+
+\section{Perspectives}
+
+\begin{description}
+  \item[Intégration SPARQL] Coupler la logique de description avec un point
+        d'accès SPARQL (Apache Jena) pour permettre des requêtes expressive
+        sur les ontologies OWL.
+
+  \item[Raisonnement temporel] Étendre la logique modale avec des opérateurs
+        temporels (CTL, LTL) pour modéliser l'évolution des carrières
+        artistiques ou des procédures judiciaires dans le temps.
+
+  \item[Interfaces Web] Remplacer l'interface JavaFX par une application Web
+        (Spring Boot + React) pour rendre les formalismes accessibles depuis
+        un navigateur.
+
+  \item[Apprentissage automatique] Combiner la représentation symbolique
+        des connaissances avec des techniques d'apprentissage automatique
+        (neurosymbolique) pour extraire automatiquement des ontologies depuis
+        des corpus textuels en langue arabe et en darija.
+
+  \item[Logiques non-classiques supplémentaires] Implémenter la logique floue
+        (pour le raisonnement incertain) ou la logique des croyances (pour
+        la révision de croyances), qui complèteraient naturellement les
+        formalismes déjà présents.
+\end{description}
+
+\bigskip
+\noindent En définitive, ce projet illustre la richesse et la complémentarité
+des formalismes de représentation des connaissances.
+Aucun formalisme n'est universellement supérieur : le choix dépend du domaine,
+de la nature des connaissances à représenter et des garanties de raisonnement
+requises.

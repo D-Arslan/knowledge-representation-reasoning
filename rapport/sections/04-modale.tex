@@ -1,0 +1,245 @@
+% ============================================================
+%  Chapitre 3 — Logique Modale
+% ============================================================
+\chapter{Logique Modale}
+
+\section{Fondements théoriques}
+
+\subsection{Syntaxe}
+
+La \textbf{logique modale} étend la logique propositionnelle par deux opérateurs
+unaires :
+
+\begin{itemize}
+  \item $\nec\varphi$ (\emph{nécessairement} $\varphi$) : $\varphi$ est vraie
+        dans \emph{tous} les mondes accessibles.
+  \item $\pos\varphi$ (\emph{possiblement} $\varphi$) : $\varphi$ est vraie
+        dans \emph{au moins un} monde accessible.
+\end{itemize}
+
+\noindent La grammaire des formules modales est :
+\[
+  \varphi \;::=\; p \;\mid\; \lnot\varphi \;\mid\; \varphi \land \varphi
+           \;\mid\; \varphi \lor \varphi \;\mid\; \varphi \to \varphi
+           \;\mid\; \nec\varphi \;\mid\; \pos\varphi
+\]
+où $p$ est un atome propositionnel.
+
+\subsection{Sémantique — Modèles de Kripke}
+
+Un \textbf{modèle de Kripke} est un triplet $\mathcal{M} = \langle W, R, V \rangle$ :
+
+\begin{itemize}
+  \item $W$ : ensemble non vide de \emph{mondes possibles} ;
+  \item $R \subseteq W \times W$ : \emph{relation d'accessibilité} entre mondes ;
+  \item $V : \mathrm{Prop} \to 2^W$ : fonction de \emph{valuation} associant à
+        chaque atome l'ensemble des mondes où il est vrai.
+\end{itemize}
+
+\noindent La relation de satisfaction $\mathcal{M}, w \models \varphi$ est définie
+inductivement ; les cas modaux sont :
+
+\begin{align*}
+  \mathcal{M}, w &\models \nec\varphi
+    &&\iff \forall v \in W,\; (w, v) \in R \Rightarrow \mathcal{M}, v \models \varphi \\
+  \mathcal{M}, w &\models \pos\varphi
+    &&\iff \exists v \in W,\; (w, v) \in R \land \mathcal{M}, v \models \varphi
+\end{align*}
+
+\subsection{Propriétés de la relation d'accessibilité}
+
+Les propriétés de $R$ définissent les systèmes modaux (Tableau~\ref{tab:modal-systems}).
+
+\begin{table}[H]
+\centering
+\caption{Propriétés de $R$ et systèmes modaux correspondants}
+\label{tab:modal-systems}
+\begin{tabular}{llll}
+\toprule
+\textbf{Propriété} & \textbf{Définition} & \textbf{Axiome} & \textbf{Système} \\
+\midrule
+Réflexive   & $\forall w,\; (w,w) \in R$               & $\nec p \to p$        & \textbf{T}  \\
+Transitive  & $(w,v),(v,u) \in R \Rightarrow (w,u) \in R$ & $\nec p \to \nec\nec p$ & \textbf{S4} \\
+Symétrique  & $(w,v) \in R \Rightarrow (v,w) \in R$   & $p \to \nec\pos p$    & \textbf{B}  \\
+Euclidienne & $(w,v),(w,u) \in R \Rightarrow (v,u) \in R$ & $\pos p \to \nec\pos p$ & \textbf{S5} \\
+Sérielle    & $\forall w,\; \exists v,\; (w,v) \in R$  & $\nec p \to \pos p$   & \textbf{D}  \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Application — Industrie musicale}
+
+\subsection{Modèle de Kripke}
+
+\[
+  W = \{w_1=\text{label},\; w_2=\text{fan},\; w_3=\text{artiste},\; w_4=\text{critique}\}
+\]
+\[
+  R = \{(w_1,w_2),\,(w_1,w_3),\,(w_3,w_3),\,(w_2,w_4),\,(w_4,w_4)\}
+\]
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=2.8cm]
+  \node[world] (w1) {$w_1$\\[-2pt]\tiny label};
+  \node[world, right=of w1] (w3) {$w_3$\\[-2pt]\tiny artiste};
+  \node[world, below=2cm of w1] (w2) {$w_2$\\[-2pt]\tiny fan};
+  \node[world, below=2cm of w2] (w4) {$w_4$\\[-2pt]\tiny critique};
+
+  \draw[arrow] (w1) -- (w3);
+  \draw[arrow] (w1) -- (w2);
+  \draw[arrow] (w2) -- (w4);
+  \draw[arrow] (w3) edge[loop right] (w3);
+  \draw[arrow] (w4) edge[loop right] (w4);
+\end{tikzpicture}
+\caption{Modèle de Kripke — domaine musical}
+\label{fig:kripke-music}
+\end{figure}
+
+\noindent\textbf{Valuation $V$ :}
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Atome & Mondes vrais \\
+\midrule
+\code{album\_est\_platine}    & $\{w_1, w_3\}$ \\
+\code{concert\_annule}        & $\{w_2, w_4\}$ \\
+\code{artiste\_sous\_contrat} & $\{w_1\}$ \\
+\code{chanson\_en\_top\_charts} & $\{w_1, w_2, w_3, w_4\}$ \\
+\code{artiste\_independant}   & $\{w_3\}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Requêtes et résultats}
+
+\begin{table}[H]
+\centering
+\caption{Évaluation des formules modales — domaine musical}
+\begin{tabularx}{\linewidth}{clccX}
+\toprule
+\textbf{\#} & \textbf{Formule} & \textbf{Monde} & \textbf{Résultat} & \textbf{Justification} \\
+\midrule
+Q1 & $\nec\,\text{album\_platine}$ & $w_1$ & \textcolor{red}{\textbf{FAUX}}
+   & $w_2 \in \mathrm{Succ}(w_1)$ mais album faux en $w_2$ \\
+Q2 & $\pos\,\text{concert\_annule}$ & $w_1$ & \textcolor{codegreen}{\textbf{VRAI}}
+   & concert vrai en $w_2 \in \mathrm{Succ}(w_1)$ \\
+Q3 & $\nec\,\text{chanson\_top}$ & $w_2$ & \textcolor{codegreen}{\textbf{VRAI}}
+   & $\mathrm{Succ}(w_2) = \{w_4\}$, chanson vrai en $w_4$ \\
+Q4 & $\pos\,\text{artiste\_independant}$ & $w_1$ & \textcolor{codegreen}{\textbf{VRAI}}
+   & indépendant vrai en $w_3 \in \mathrm{Succ}(w_1)$ \\
+Q5 & $\nec(\text{album} \to \text{contrat})$ & $w_1$ & \textcolor{red}{\textbf{FAUX}}
+   & en $w_3$ : album=V, contrat=F $\Rightarrow$ implication=F \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\noindent\textbf{Propriétés de $R$ :} non réflexive ($w_2$ sans boucle),
+non transitive, non symétrique, \textbf{sérielle} (tout monde a un successeur).
+
+\section{Application — Système judiciaire}
+
+\subsection{Modèle de Kripke}
+
+\[
+  W = \{w_1=\text{juge},\; w_2=\text{avocat},\; w_3=\text{procureur},\;
+        w_4=\text{témoin},\; w_5=\text{accusé}\}
+\]
+\[
+  R = \{(w_1,w_1),\,(w_1,w_2),\,(w_1,w_3),\,(w_2,w_4),\,(w_3,w_5),\,(w_5,w_5)\}
+\]
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=2.5cm]
+  \node[world] (w1) {$w_1$\\[-2pt]\tiny juge};
+  \node[world, right=of w1] (w2) {$w_2$\\[-2pt]\tiny avocat};
+  \node[world, below=2.2cm of w1] (w3) {$w_3$\\[-2pt]\tiny procureur};
+  \node[world, right=of w2] (w4) {$w_4$\\[-2pt]\tiny témoin};
+  \node[world, right=of w3] (w5) {$w_5$\\[-2pt]\tiny accusé};
+
+  \draw[arrow] (w1) -- (w2);
+  \draw[arrow] (w1) -- (w3);
+  \draw[arrow] (w2) -- (w4);
+  \draw[arrow] (w3) -- (w5);
+  \draw[arrow] (w1) edge[loop left] (w1);
+  \draw[arrow] (w5) edge[loop right] (w5);
+\end{tikzpicture}
+\caption{Modèle de Kripke — domaine judiciaire}
+\label{fig:kripke-justice}
+\end{figure}
+
+\noindent\textbf{Valuation $V$ :}
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Atome & Mondes vrais \\
+\midrule
+\code{accuse\_est\_coupable}        & $\{w_3, w_5\}$ \\
+\code{accuse\_est\_innocent}        & $\{w_2, w_4\}$ \\
+\code{preuve\_valide}               & $\{w_1, w_3\}$ \\
+\code{temoin\_credible}             & $\{w_1, w_2, w_4\}$ \\
+\code{circonstances\_attenuantes}   & $\{w_2, w_5\}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Requêtes et résultats}
+
+\begin{table}[H]
+\centering
+\caption{Évaluation des formules modales — domaine judiciaire}
+\begin{tabularx}{\linewidth}{clccX}
+\toprule
+\textbf{\#} & \textbf{Formule} & \textbf{Monde} & \textbf{Résultat} & \textbf{Justification} \\
+\midrule
+Q1 & $\nec\,\text{preuve\_valide}$ & $w_1$ & \textcolor{red}{\textbf{FAUX}}
+   & preuve faux en $w_2 \in \mathrm{Succ}(w_1)$ \\
+Q2 & $\pos\,\text{accuse\_innocent}$ & $w_1$ & \textcolor{codegreen}{\textbf{VRAI}}
+   & innocent vrai en $w_2 \in \mathrm{Succ}(w_1)$ \\
+Q3 & $\nec\,\text{accuse\_coupable}$ & $w_3$ & \textcolor{codegreen}{\textbf{VRAI}}
+   & $\mathrm{Succ}(w_3) = \{w_5\}$, coupable vrai en $w_5$ \\
+Q4 & $\pos\,\text{circ\_attenuantes}$ & $w_1$ & \textcolor{codegreen}{\textbf{VRAI}}
+   & atténuantes vrai en $w_2 \in \mathrm{Succ}(w_1)$ \\
+Q5 & $\nec\,\text{temoin\_credible}$ & $w_2$ & \textcolor{codegreen}{\textbf{VRAI}}
+   & $\mathrm{Succ}(w_2) = \{w_4\}$, crédible vrai en $w_4$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\noindent\textbf{Propriétés de $R$ :} réflexive en $w_1$ seulement,
+non symétrique, non transitive, \textbf{non sérielle} ($w_4$ n'a aucun successeur).
+
+\section{Implémentation avec TweetyProject}
+
+L'évaluation modale est implémentée manuellement, TweetyProject étant utilisé
+pour les structures de données (\code{FolAtom}, \code{Predicate},
+\code{MlHerbrandInterpretation}).
+
+\begin{lstlisting}[caption={Construction du modèle de Kripke en Java}]
+// Atomes propositionnels
+FolAtom albumPlatine = new FolAtom(new Predicate("album_est_platine"));
+
+// Mondes (ensemble d'atomes vrais dans ce monde)
+MlHerbrandInterpretation w1 = new MlHerbrandInterpretation(
+    List.of(albumPlatine, contrat, chanson));
+MlHerbrandInterpretation w2 = new MlHerbrandInterpretation(
+    List.of(concertAnnule, chanson));
+
+// Relation d'accessibilite
+Set<Pair<Interpretation,Interpretation>> pairs = new HashSet<>();
+pairs.add(new Pair<>(w1, w2));  // w1 -> w2
+pairs.add(new Pair<>(w1, w3));  // w1 -> w3
+pairs.add(new Pair<>(w3, w3));  // w3 boucle (reflexif local)
+AccessibilityRelation R = new AccessibilityRelation(pairs);
+
+// Evaluation de □album_platine depuis w1
+boolean result = evaluate(w1, new Necessity(albumPlatine), R);
+// → false : w2 est successeur de w1 et album_platine est faux en w2
+\end{lstlisting}
+
+\noindent L'évaluation récursive gère les cas :
+\code{FolAtom} (consulte la valuation),
+\code{Negation}, \code{Conjunction}, \code{Disjunction}, \code{Implication},
+\code{Necessity} (itère sur tous les successeurs),
+\code{Possibility} (cherche un successeur satisfaisant).

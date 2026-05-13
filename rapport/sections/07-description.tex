@@ -1,0 +1,326 @@
+% ============================================================
+%  Chapitre 6 — Logique de Description
+% ============================================================
+\chapter{Logique de Description}
+
+\section{Fondements théoriques}
+
+\subsection{Positionnement}
+
+La \textbf{logique de description} (\textsc{dl}) est une famille de formalismes
+de représentation des connaissances dédiés à la modélisation de domaines
+structurés en \emph{concepts} (classes) et \emph{rôles} (propriétés).
+Elle constitue la base théorique des ontologies OWL~2.
+
+\subsection{Vocabulaire et constructeurs}
+
+\begin{table}[H]
+\centering
+\caption{Constructeurs de la logique de description $\mathcal{SROIQ}$ (OWL 2)}
+\begin{tabular}{lll}
+\toprule
+\textbf{Constructeur} & \textbf{Notation} & \textbf{Signification} \\
+\midrule
+Intersection   & $C \dlinter D$         & appartient à $C$ et à $D$ \\
+Union          & $C \dlunion D$         & appartient à $C$ ou à $D$ \\
+Complément     & $\dlcomp{C}$           & n'appartient pas à $C$ \\
+Restriction ex.& $\dlsome{R}{C}$        & a au moins un $R$-successeur dans $C$ \\
+Restriction un.& $\dlall{R}{C}$         & tous les $R$-successeurs sont dans $C$ \\
+Concept vide   & $\bot$                 & concept insatisfaisable \\
+Concept universel & $\top$             & tout individu \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{TBox et ABox}
+
+Une ontologie se compose de deux composantes :
+
+\begin{description}
+  \item[TBox (terminologique)] — ensemble d'axiomes définissant les concepts et
+    leurs relations.
+    Un \emph{axiome d'équivalence} $C \equiv D$ (définition complète) ou
+    un \emph{axiome de subsomption} $C \sq D$ (condition nécessaire).
+
+  \item[ABox (assertionnelle)] — ensemble d'assertions sur les individus :
+    $C(a)$ (l'individu $a$ appartient au concept $C$) et
+    $R(a,b)$ ($a$ est lié à $b$ par le rôle $R$).
+\end{description}
+
+\subsection{Hypothèse du monde ouvert (OWA)}
+
+Contrairement à la logique des défauts (monde fermé implicite), la logique de
+description adopte l'\textbf{hypothèse du monde ouvert} (\textsc{owa}) :
+ce qui n'est pas asserté n'est ni vrai ni faux — il pourrait exister des
+informations non encore connues.
+
+\begin{tcolorbox}[notebox, title={OWA en pratique}]
+Si l'ABox ne contient pas \code{signe\_chez(flenn, x)}, le raisonneur OWL ne
+peut pas conclure que flenn n'a aucun label. Il faut soit une assertion
+négative explicite, soit un axiome de complément, pour forcer cette conclusion.
+Dans ce projet, on supplée par une \textbf{assertion explicite de classe}.
+\end{tcolorbox}
+
+\subsection{Raisonnement — HermiT}
+
+Le raisonneur \textbf{HermiT} implémente un algorithme de tableaux pour OWL~2
+(\textsc{sroiq}).
+Il supporte les services de raisonnement suivants :
+
+\begin{itemize}
+  \item \code{isEntailed(axiom)} — vérifier si un axiome est conséquence logique
+        de l'ontologie ;
+  \item \code{getInstances(C, direct)} — obtenir les individus de la classe $C$ ;
+  \item \code{getSubClasses(C, direct)} — obtenir les sous-classes de $C$ ;
+  \item \code{isConsistent()} — vérifier la cohérence globale de l'ontologie.
+\end{itemize}
+
+\section{Application — Industrie musicale}
+
+\subsection{TBox}
+
+\begin{tcolorbox}[defbox, title={TBox musicale (sélection)}]
+\begin{align*}
+\text{Artiste}           &\equiv \text{Personne} \dlinter \dlsome{\text{produit}}{\text{Oeuvre}} \\
+\text{Rappeur}           &\equiv \text{Artiste} \dlinter \dlsome{\text{pratique}}{\text{Rap}}
+                                  \dlinter \dlall{\text{produit}}{\text{TitreRap}} \\
+\text{RappeurAlgerien}   &\equiv \text{Rappeur} \dlinter \dlsome{\text{chante\_en}}{\text{Darija}} \\
+\text{Label}             &\equiv \text{Organisation} \dlinter \dlsome{\text{distribue}}{\text{Album}} \\
+\text{MajorLabel}        &\equiv \text{Label} \dlinter \dlsome{\text{signe}}{\text{PlusDe100Artistes}} \\
+\text{IndependantLabel}  &\equiv \text{Label} \dlinter \dlcomp{\text{MajorLabel}} \\
+\text{AlbumCertifie}     &\equiv \text{Album} \dlinter \dlsome{\text{reçoit}}{\text{Certification}} \\
+\text{AlbumOr}           &\equiv \text{AlbumCertifie} \dlinter \dlsome{\text{reçoit}}{\text{CertificationOr}} \\
+\text{ArtisteSign\'{e}} &\equiv \text{Artiste} \dlinter \dlsome{\text{signe\_chez}}{\text{Label}} \\
+\text{ArtisteMajor}      &\equiv \text{Artiste} \dlinter \dlsome{\text{signe\_chez}}{\text{MajorLabel}} \\
+\text{ArtisteIndependant}&\equiv \text{Artiste} \dlinter \dlcomp{\dlsome{\text{signe\_chez}}{\text{MajorLabel}}} \\
+\text{ArtisteLibreDroits}&\equiv \text{Artiste} \dlinter \dlcomp{\dlsome{\text{signe\_chez}}{\text{Label}}}
+\end{align*}
+\end{tcolorbox}
+
+\subsection{Hiérarchie de concepts}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=1.4cm and 2.2cm,
+  every node/.style={concept}
+]
+  \node (Personne)  {Personne};
+  \node (Artiste)   [below=of Personne]  {Artiste};
+  \node (Rappeur)   [below left=of Artiste]  {Rappeur};
+  \node (Chanteur)  [below right=of Artiste] {Chanteur};
+  \node (RappAlg)   [below=of Rappeur]   {RappeurAlgerien};
+  \node (ArtMajor)  [right=3cm of Rappeur]  {ArtisteMajor};
+  \node (ArtSigne)  [above=of ArtMajor]  {ArtisteSigne};
+  \node (ArtIndep)  [right=of ArtMajor]  {ArtisteIndependant};
+  \node (ArtLibre)  [right=of ArtIndep]  {ArtisteLibreDroits};
+
+  \draw[arrow] (Artiste) -- (Personne);
+  \draw[arrow] (Rappeur) -- (Artiste);
+  \draw[arrow] (Chanteur) -- (Artiste);
+  \draw[arrow] (RappAlg) -- (Rappeur);
+  \draw[arrow] (ArtMajor) -- (ArtSigne);
+  \draw[arrow] (ArtSigne) -- (Artiste);
+  \draw[arrow] (ArtIndep) -- (Artiste);
+  \draw[arrow] (ArtLibre) -- (Artiste);
+\end{tikzpicture}
+\caption{Hiérarchie TBox — domaine musical ($A \to B$ signifie $A \sq B$)}
+\label{fig:tbox-music}
+\end{figure}
+
+\subsection{ABox}
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+\textbf{Assertion de classe} & \textbf{Assertions de propriétés} \\
+\midrule
+$\text{RappeurAlgerien}(\text{soolking})$ & $\text{signe\_chez}(\text{soolking}, \text{universal})$ \\
+$\text{RappeurAlgerien}(\text{feu})$      & $\text{signe\_chez}(\text{feu}, \text{believe})$ \\
+$\text{RappeurAlgerien}(\text{tif})$      & $\text{produit}(\text{soolking}, \text{guerilla})$ \\
+$\text{RappeurAlgerien}(\text{flenn})$    & $\text{recoit}(\text{guerilla}, \text{cert\_or})$ \\
+$\text{MajorLabel}(\text{universal})$     & $\text{ArtisteLibreDroits}(\text{tif})$ \\
+$\text{IndependantLabel}(\text{believe})$ & $\text{ArtisteLibreDroits}(\text{flenn})$ \\
+$\text{Album}(\text{guerilla})$           & \\
+$\text{CertificationOr}(\text{cert\_or})$ & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Requêtes et résultats}
+
+\begin{table}[H]
+\centering
+\caption{Résultats des requêtes HermiT — domaine musical}
+\begin{tabularx}{\linewidth}{clcX}
+\toprule
+\textbf{\#} & \textbf{Requête} & \textbf{Résultat} & \textbf{Justification} \\
+\midrule
+R1 & $\text{ArtisteIndependant}(\text{soolking})$
+   & \textcolor{red}{\textbf{FAUX}}
+   & soolking $\in \dlsome{\text{signe\_chez}}{\text{MajorLabel}}$,
+     contradiction avec $\dlcomp{}$ \\
+R2 & $\text{ArtisteLibreDroits}(\text{feu})$
+   & \textcolor{red}{\textbf{FAUX}}
+   & feu $\in \dlsome{\text{signe\_chez}}{\text{IndependantLabel} \sq \text{Label}}$ \\
+R3 & $\text{ArtisteLibreDroits}(\text{tif})$
+   & \textcolor{codegreen}{\textbf{VRAI}}
+   & asserté en ABox \\
+R4 & $\text{ArtisteLibreDroits}(\text{flenn})$
+   & \textcolor{codegreen}{\textbf{VRAI}}
+   & asserté en ABox \\
+R5 & $\text{AlbumOr}(\text{guerilla})$
+   & \textcolor{codegreen}{\textbf{VRAI}}
+   & recoit(guerilla, certOr), certOr $\sq$ Certification \\
+R6 & $\text{instances}(\text{ArtisteSigne})$
+   & \{soolking, feu\}
+   & signe\_chez Label pour les deux \\
+R7 & $\text{instances}(\text{ArtisteLibreDroits})$
+   & \{tif, flenn\}
+   & assertés, pas de signe\_chez \\
+R8 & $\text{ArtisteMajor} \sq \text{ArtisteSigne}$
+   & \textcolor{codegreen}{\textbf{VRAI}}
+   & MajorLabel $\sq$ Label $\Rightarrow$ subsomption \\
+R9 & Disjoint(ArtisteIndependant, ArtisteMajor)
+   & \textcolor{codegreen}{\textbf{VRAI}}
+   & $\dlcomp{\dlsome{R}{M}} \dlinter \dlsome{R}{M} = \bot$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Démonstration de non-monotonie OWL}
+
+\begin{tcolorbox}[resultbox, title={R10 — Non-monotonie pour flenn}]
+\textbf{Ontologie AVANT :} flenn : ArtisteLibreDroits (asserté) \\
+\quad HermiT : \code{isEntailed(ArtisteLibreDroits(flenn))} $=$ \textbf{VRAI}
+
+\medskip
+\textbf{Ontologie APRÈS :}
+\begin{enumerate}
+  \item Retrait de l'assertion \code{ArtisteLibreDroits(flenn)}
+  \item Ajout de \code{signe\_chez(flenn, universal)}
+\end{enumerate}
+\quad universal : MajorLabel $\sq$ Label
+$\Rightarrow$ flenn $\in \dlsome{\text{signe\_chez}}{\text{Label}}$
+$\Rightarrow$ flenn $\notin$ ArtisteLibreDroits \\
+\quad HermiT : \code{isEntailed(ArtisteLibreDroits(flenn))} $=$ \textbf{FAUX}
+
+\medskip
+\textbf{Lien avec DefaultLogicMusic :}
+la nouvelle assertion \code{signe\_chez(flenn, universal)}
+joue le rôle du fait \code{SigneLabel(flenn)} qui déclenche le défaut $d_2$
+et bloque $d_1$, invalidant \code{LibreDroits(flenn)}.
+\end{tcolorbox}
+
+\section{Application — Système judiciaire}
+
+\subsection{TBox}
+
+\begin{tcolorbox}[defbox, title={TBox judiciaire (sélection)}]
+\begin{align*}
+\text{Magistrat}           &\equiv \text{ActeurJudiciaire} \dlinter \dlsome{\text{siege\_a}}{\text{Tribunal}} \\
+\text{Juge}                &\equiv \text{Magistrat} \dlinter \dlsome{\text{preside}}{\text{Audience}} \\
+\text{Procureur}           &\equiv \text{Magistrat} \dlinter \dlsome{\text{requiert}}{\text{Peine}} \\
+\text{AccuseMineur}        &\equiv \text{Accuse} \dlinter \dlsome{\text{a\_age}}{\text{MoinsDe18Ans}} \\
+\text{AccuseRecidiviste}   &\equiv \text{Accuse} \dlinter \dlsome{\text{a\_antecedent}}{\text{Condamnation}} \\
+\text{AccusePresumInnocent}&\equiv \text{Accuse} \dlinter \dlcomp{\text{Condamne}} \\
+\text{AccuseAvecTemoignage}&\equiv \text{Accuse} \dlinter \dlsome{\text{beneficie}}{\text{TemoignageFav.}} \\
+\text{CasSimple}           &\equiv \text{Accuse} \dlinter \dlcomp{\text{AccuseRecidiviste}}
+                                   \dlinter \dlcomp{\text{AccuseMineur}} \\
+\text{CasComplexe}         &\equiv \text{Accuse} \dlinter
+                                   (\text{AccuseRecidiviste} \dlunion \text{AccuseMineur})
+\end{align*}
+\end{tcolorbox}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.3cm and 2cm, every node/.style={concept}]
+  \node (Personne)   {Personne};
+  \node (AJ)         [below=of Personne]         {ActeurJudiciaire};
+  \node (Accuse)     [below left=of AJ]           {Accusé};
+  \node (Magistrat)  [below right=of AJ]          {Magistrat};
+  \node (Juge)       [below left=of Magistrat]    {Juge};
+  \node (Proc)       [below right=of Magistrat]   {Procureur};
+  \node (Mineur)     [below left=of Accuse]       {AccuséMineur};
+  \node (Recid)      [below=of Accuse]            {AccuséRécid.};
+  \node (Innocent)   [below right=of Accuse]      {AccuséPrésumInnocent};
+  \node (Simple)     [below=of Mineur]            {CasSimple};
+  \node (Complexe)   [below=of Recid]             {CasComplexe};
+
+  \draw[arrow] (AJ) -- (Personne);
+  \draw[arrow] (Accuse) -- (Personne);
+  \draw[arrow] (Magistrat) -- (AJ);
+  \draw[arrow] (Juge) -- (Magistrat);
+  \draw[arrow] (Proc) -- (Magistrat);
+  \draw[arrow] (Mineur) -- (Accuse);
+  \draw[arrow] (Recid) -- (Accuse);
+  \draw[arrow] (Innocent) -- (Accuse);
+  \draw[arrow] (Simple) -- (Accuse);
+  \draw[arrow] (Complexe) -- (Accuse);
+\end{tikzpicture}
+\caption{Hiérarchie TBox — domaine judiciaire}
+\label{fig:tbox-justice}
+\end{figure}
+
+\subsection{Requêtes et résultats}
+
+\begin{table}[H]
+\centering
+\caption{Résultats des requêtes HermiT — domaine judiciaire}
+\begin{tabularx}{\linewidth}{clcX}
+\toprule
+\textbf{\#} & \textbf{Requête} & \textbf{Résultat} & \textbf{Justification} \\
+\midrule
+R1 & AccusePresumInnocent(ali)    & \textcolor{codegreen}{\textbf{VRAI}}  & asserté en ABox \\
+R2 & AccuseAvecTemoignage(ali)    & \textcolor{codegreen}{\textbf{VRAI}}  & derivé : beneficie(ali, TemoignageFav.) \\
+R3 & AccuseRecidiviste(omar)      & \textcolor{codegreen}{\textbf{VRAI}}  & derivé : a\_antecedent(omar, Condamnation) \\
+R4 & CasComplexe(karim)           & \textcolor{codegreen}{\textbf{VRAI}}  & karim:AccuseMineur $\Rightarrow$ CasComplexe \\
+R5 & CasSimple(ali)               & \textcolor{codegreen}{\textbf{VRAI}}  & asserté en ABox \\
+R6 & instances(CasComplexe)       & \{omar, karim\}                       & omar(récidiviste) + karim(mineur) \\
+R7 & instances(CasSimple)         & \{ali\}                               & asserté \\
+R8 & AccuseRecidiviste $\sq$ Accuse & \textcolor{codegreen}{\textbf{VRAI}} & par définition de l'équivalence \\
+R9 & Disjoint(CasSimple, CasComplexe) & \textcolor{codegreen}{\textbf{VRAI}} & $\dlcomp{R} \dlinter R = \bot$ \\
+R10 & Disjoint(Juge, Procureur)   & \textcolor{red}{\textbf{FAUX}}        & tous deux Magistrats, non déclarés disjoints \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Implémentation avec OWL API 4.5}
+
+\begin{lstlisting}[caption={Construction de la TBox et raisonnement HermiT}]
+// Gestionnaire et ontologie
+OWLOntologyManager mgr = OWLManager.createOWLOntologyManager();
+OWLOntology onto = mgr.createOntology(IRI.create("http://rcr1/musique"));
+OWLDataFactory f = mgr.getOWLDataFactory();
+
+// Classes
+OWLClass Artiste  = f.getOWLClass(IRI.create(NS + "Artiste"));
+OWLClass Label    = f.getOWLClass(IRI.create(NS + "Label"));
+OWLObjectProperty signeChez =
+    f.getOWLObjectProperty(IRI.create(NS + "signe_chez"));
+
+// TBox : ArtisteSigné ≡ Artiste ⊓ ∃signe_chez.Label
+OWLClass ArtisteSigne = f.getOWLClass(IRI.create(NS + "ArtisteSigne"));
+mgr.addAxiom(onto, f.getOWLEquivalentClassesAxiom(ArtisteSigne,
+    f.getOWLObjectIntersectionOf(Artiste,
+        f.getOWLObjectSomeValuesFrom(signeChez, Label))));
+
+// ABox : signe_chez(soolking, universal)
+OWLNamedIndividual soolking = f.getOWLNamedIndividual(IRI.create(NS+"soolking"));
+OWLNamedIndividual universal = f.getOWLNamedIndividual(IRI.create(NS+"universal"));
+mgr.addAxiom(onto, f.getOWLObjectPropertyAssertionAxiom(
+    signeChez, soolking, universal));
+
+// Raisonneur HermiT
+OWLReasoner reasoner = new ReasonerFactory().createReasoner(onto);
+
+// R6 : instances de ArtisteSigné
+Set<OWLNamedIndividual> signes =
+    reasoner.getInstances(ArtisteSigne, false).getFlattened();
+// → {soolking, feu}
+
+// R8 : ArtisteMajor ⊑ ArtisteSigné
+boolean sub = reasoner.isEntailed(
+    f.getOWLSubClassOfAxiom(ArtisteMajor, ArtisteSigne));
+// → true
+\end{lstlisting}

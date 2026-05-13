@@ -1,0 +1,171 @@
+% ============================================================
+%  Rapport RCR1 — Logiques Formelles
+%  Master 1 SII · USTHB · 2025-2026
+% ============================================================
+\documentclass[12pt, a4paper]{report}
+
+% ---------- Encodage & langue ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{lmodern}
+
+% ---------- Mise en page ----------
+\usepackage[top=2.5cm, bottom=2.5cm, left=3cm, right=2.5cm]{geometry}
+\usepackage{fancyhdr}
+\usepackage{emptypage}
+\usepackage{setspace}
+\onehalfspacing
+
+% ---------- Mathématiques ----------
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+
+% ---------- Figures & tableaux ----------
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{caption}
+\usepackage{subcaption}
+
+% ---------- Couleurs ----------
+\usepackage[dvipsnames, table]{xcolor}
+\definecolor{usthbblue}{RGB}{0, 63, 130}
+\definecolor{codegreen}{RGB}{40, 160, 40}
+\definecolor{codegray}{RGB}{100, 100, 100}
+\definecolor{codepurple}{RGB}{130, 0, 200}
+\definecolor{codeblue}{RGB}{0, 100, 200}
+\definecolor{backcolor}{RGB}{248, 248, 248}
+\definecolor{accent}{RGB}{0, 120, 180}
+
+% ---------- TikZ (schémas) ----------
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric,
+                automata, calc, fit, backgrounds}
+\tikzset{
+  world/.style  = {circle, draw=usthbblue, fill=usthbblue!10,
+                   minimum size=1.1cm, font=\small\bfseries},
+  concept/.style= {rectangle, rounded corners=4pt,
+                   draw=accent, fill=accent!8,
+                   minimum width=2.6cm, minimum height=0.75cm,
+                   font=\footnotesize},
+  arrow/.style  = {-{Stealth[length=6pt]}, thick, usthbblue},
+  loop/.style   = {-{Stealth[length=6pt]}, thick, usthbblue,
+                   looseness=6, in=60, out=120},
+}
+
+% ---------- Code source ----------
+\usepackage{listings}
+\lstdefinestyle{java}{
+  backgroundcolor=\color{backcolor},
+  commentstyle=\color{codegreen}\itshape,
+  keywordstyle=\color{codeblue}\bfseries,
+  numberstyle=\tiny\color{codegray},
+  stringstyle=\color{codepurple},
+  basicstyle=\ttfamily\footnotesize,
+  breaklines=true,
+  captionpos=b,
+  keepspaces=true,
+  numbers=left,
+  numbersep=6pt,
+  showspaces=false,
+  showstringspaces=false,
+  tabsize=2,
+  language=Java,
+  frame=single,
+  rulecolor=\color{gray!40},
+  xleftmargin=10pt,
+  xrightmargin=4pt,
+  morekeywords={OWLClass, OWLNamedIndividual, OWLObjectProperty,
+                OWLOntology, OWLOntologyManager, OWLDataFactory,
+                OWLReasoner, OWLReasonerFactory, NodeSet, Node,
+                ReasonerFactory, DefaultTheory, Extension,
+                SimpleDefaultReasoner, RdlParser,
+                MlHerbrandInterpretation, AccessibilityRelation},
+}
+\lstdefinestyle{dl}{
+  backgroundcolor=\color{backcolor},
+  basicstyle=\ttfamily\footnotesize,
+  breaklines=true,
+  frame=single,
+  rulecolor=\color{gray!40},
+  xleftmargin=10pt,
+}
+\lstset{style=java}
+
+% ---------- Boîtes colorées ----------
+\usepackage[most]{tcolorbox}
+\tcbset{
+  defbox/.style={
+    colback=usthbblue!5, colframe=usthbblue!60,
+    fonttitle=\bfseries, boxrule=0.5pt, arc=4pt,
+  },
+  resultbox/.style={
+    colback=green!5, colframe=green!50!black,
+    fonttitle=\bfseries, boxrule=0.5pt, arc=4pt,
+  },
+  notebox/.style={
+    colback=orange!5, colframe=orange!70!black,
+    fonttitle=\bfseries, boxrule=0.5pt, arc=4pt,
+  },
+}
+
+% ---------- Hyperliens ----------
+\usepackage[colorlinks=true, linkcolor=usthbblue,
+            citecolor=usthbblue, urlcolor=accent]{hyperref}
+
+% ---------- En-têtes & pieds de page ----------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\leftmark}
+\fancyhead[R]{\small RCR1 — USTHB 2025-2026}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ---------- Symboles DL ----------
+\newcommand{\sq}{\sqsubseteq}
+\newcommand{\sqe}{\sqsupseteq}
+\newcommand{\dlsome}[2]{\exists #1.\,#2}
+\newcommand{\dlall}[2]{\forall #1.\,#2}
+\newcommand{\dlcomp}[1]{\lnot #1}
+\newcommand{\dlinter}{\sqcap}
+\newcommand{\dlunion}{\sqcup}
+\newcommand{\nec}{\Box}
+\newcommand{\pos}{\Diamond}
+
+% ---------- Macros utiles ----------
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\file}[1]{\textit{#1}}
+\newcommand{\pkg}[1]{\textsf{#1}}
+
+% ============================================================
+\begin{document}
+
+% ---------- Page de garde ----------
+\input{sections/00-garde}
+
+% ---------- Résumé ----------
+\input{sections/01-resume}
+
+% ---------- Table des matières ----------
+\tableofcontents
+\newpage
+
+% ---------- Chapitres ----------
+\input{sections/02-introduction}
+\input{sections/03-architecture}
+\input{sections/04-modale}
+\input{sections/05-defauts}
+\input{sections/06-classique}
+\input{sections/07-description}
+\input{sections/08-reseaux}
+\input{sections/09-comparaison}
+\input{sections/10-conclusion}
+
+% ---------- Bibliographie ----------
+\input{sections/11-bibliographie}
+
+\end{document}
