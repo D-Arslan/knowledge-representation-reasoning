@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import rcr.ui.classical.ClassicalLogicController;
 import rcr.ui.defaut.DefaultLogicController;
+import rcr.ui.description.DescriptionLogicController;
 import rcr.ui.modal.ModalLogicController;
 
 public class DashboardController {
@@ -30,6 +31,14 @@ public class DashboardController {
         Stage stage = new Stage();
         stage.setTitle("Logique Classique — Propositionnelle & Prédicats");
         stage.setScene(new Scene(new ClassicalLogicController().buildUI(), 980, 720));
+        stage.show();
+    }
+
+    @FXML
+    public void openDescription() {
+        Stage stage = new Stage();
+        stage.setTitle("Logique de Description — OWL API 4.5 · HermiT");
+        stage.setScene(new Scene(new DescriptionLogicController().buildUI(), 980, 740));
         stage.show();
     }
 }
