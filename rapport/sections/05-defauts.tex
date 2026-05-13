@@ -1,0 +1,196 @@
+% ============================================================
+%  Chapitre 4 — Logique des Défauts
+% ============================================================
+\chapter{Logique des Défauts}
+
+\section{Fondements théoriques}
+
+\subsection{Motivation}
+
+La logique classique est \textbf{monotone} : ajouter un fait à une base de
+connaissances ne peut qu'augmenter l'ensemble des conclusions.
+Or, le raisonnement humain est fréquemment \textbf{non-monotone} : on tire des
+conclusions par défaut qui peuvent être invalidées par de nouvelles informations.
+
+\begin{tcolorbox}[notebox, title={Exemple de non-monotonie}]
+\textit{Par défaut, un artiste est libre de droits.
+Mais si l'on apprend qu'il a signé avec un label, cette conclusion est
+immédiatement révisée.}
+\end{tcolorbox}
+
+\subsection{Théorie des défauts de Reiter (1980)}
+
+Une \textbf{théorie des défauts} est un couple $\Delta = (W, D)$ où :
+\begin{itemize}
+  \item $W$ est un ensemble de formules du premier ordre (\emph{faits certains}) ;
+  \item $D$ est un ensemble de \emph{défauts}.
+\end{itemize}
+
+\noindent Un \textbf{défaut} a la forme :
+\[
+  \frac{\alpha(x) : \beta(x)}{\gamma(x)}
+\]
+où $\alpha$ est le \emph{prérequis} (doit être dérivable),
+$\beta$ est la \emph{justification} (doit être cohérente),
+$\gamma$ est la \emph{conclusion}.
+
+\subsection{Extensions}
+
+Une \textbf{extension} $E$ de $\Delta = (W, D)$ est un ensemble maximal et
+cohérent de croyances obtenu en appliquant les défauts applicables.
+Formellement, $E$ est le plus petit ensemble tel que :
+\begin{enumerate}
+  \item $W \subseteq E$ ;
+  \item $E$ est clos par déduction classique ;
+  \item Pour tout défaut $\frac{\alpha:\beta}{\gamma} \in D$,
+        si $\alpha \in E$ et $\lnot\beta \notin E$, alors $\gamma \in E$.
+\end{enumerate}
+
+\noindent Lorsque deux défauts produisent des conclusions contradictoires,
+il existe \textbf{plusieurs extensions} — chacune correspondant à un choix
+cohérent de défauts appliqués.
+
+\noindent On distingue :
+\begin{itemize}
+  \item La \textbf{sémantique crédule} : une conclusion est acceptée si elle
+        appartient à \emph{au moins une} extension.
+  \item La \textbf{sémantique sceptique} : une conclusion est acceptée si elle
+        appartient à \emph{toutes} les extensions.
+\end{itemize}
+
+\section{Application — Industrie musicale}
+
+\subsection{Théorie $\Delta = (W, D)$}
+
+\begin{tcolorbox}[defbox, title={Défauts $D$ — domaine musical}]
+\begin{align*}
+d_1 &: \frac{\text{EstArtiste}(x) : \text{LibreDroits}(x)}{\text{LibreDroits}(x)} \\[4pt]
+d_2 &: \frac{\text{SigneLabel}(x) : \lnot\text{LibreDroits}(x)}{\lnot\text{LibreDroits}(x)} \\[4pt]
+d_3 &: \frac{\text{EstArtiste}(x) \land \text{AlbumSorti}(x) : \text{Royalties}(x)}{\text{Royalties}(x)} \\[4pt]
+d_4 &: \frac{\text{SigneLabel}(x) : \text{PartageRoyalties}(x)}{\text{PartageRoyalties}(x)} \\[4pt]
+d_5 &: \frac{\text{IndependantLongtemps}(x) : \text{ExperienceSolo}(x)}{\text{ExperienceSolo}(x)} \\[4pt]
+d_6 &: \frac{\text{NouveauContrat}(x) : \lnot\text{LibreDroits}(x)}{\lnot\text{LibreDroits}(x)} \\[4pt]
+d_7 &: \frac{\text{PlusDeDeuxAns}(x) \land \text{AlbumSorti}(x) : \text{AlbumCertifie}(x)}{\text{AlbumCertifie}(x)}
+\end{align*}
+\end{tcolorbox}
+
+\subsection{Résultats par artiste}
+
+\begin{table}[H]
+\centering
+\caption{Extensions calculées par artiste — domaine musical}
+\label{tab:defaut-music}
+\begin{tabularx}{\linewidth}{lXll}
+\toprule
+\textbf{Artiste} & \textbf{Faits $W$} & \textbf{Ext.} & \textbf{Conflit} \\
+\midrule
+Soolking & EstArtiste + SigneLabel + AlbumSorti & 2 & $d_1$ vs $d_2$ \\
+Feu      & EstArtiste + IndependantLongtemps + NouveauContrat & 2 & $d_1$ vs $d_6$ \\
+Tif      & EstArtiste + AlbumSorti + PlusDeDeuxAns & 1 & — \\
+Flenn (avant) & EstArtiste + AlbumSorti + PlusDeDeuxAns & 1 & — \\
+Flenn (après) & + SigneLabel & 2 & $d_1$ vs $d_2$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\noindent\textbf{Tif — extension unique :}
+$E_{\text{tif}} = \{\text{EstArtiste, AlbumSorti, PlusDeDeuxAns,
+LibreDroits, Royalties, AlbumCertifie}\}$
+
+\medskip
+\noindent\textbf{Soolking — deux extensions (conflit $d_1$ vs $d_2$) :}
+\begin{align*}
+E_1 &= \{\ldots,\; \text{LibreDroits,\; Royalties,\; PartageRoyalties}\} \\
+E_2 &= \{\ldots,\; \lnot\text{LibreDroits,\; Royalties,\; PartageRoyalties}\}
+\end{align*}
+
+\noindent Les conclusions \textbf{Royalties} et \textbf{PartageRoyalties}
+(issues de $d_3$ et $d_4$) sont dans \textit{toutes} les extensions :
+elles sont acceptées en sémantique sceptique.
+\textbf{LibreDroits} ne l'est pas : sémantique crédule seulement.
+
+\subsection{Démonstration de non-monotonie}
+
+\begin{tcolorbox}[resultbox, title={Non-monotonie — Flenn}]
+\textbf{AVANT} ajout de $\text{SigneLabel(flenn)}$ dans $W$ :
+\[
+  \text{LibreDroits(flenn)} \in E \quad (\text{unique extension, } d_1 \text{ s'applique})
+\]
+\textbf{APRÈS} ajout de $\text{SigneLabel(flenn)}$ dans $W$ :
+\[
+  \text{LibreDroits(flenn)} \notin \bigcap E_i \quad (d_1 \text{ et } d_2 \text{ en conflit,
+  2 extensions})
+\]
+\textbf{Conclusion :} l'enrichissement de $W$ a invalidé une conclusion précédente.
+C'est la \textbf{non-monotonie} caractéristique de la logique des défauts.
+\end{tcolorbox}
+
+\section{Application — Système judiciaire}
+
+\subsection{Théorie $\Delta = (W, D)$}
+
+\begin{tcolorbox}[defbox, title={Défauts $D$ — domaine judiciaire}]
+\begin{align*}
+d_1 &: \frac{\text{Accuse}(x) : \text{Innocent}(x)}{\text{Innocent}(x)} \\[4pt]
+d_2 &: \frac{\text{Recidiviste}(x) : \text{PeineLourde}(x)}{\text{PeineLourde}(x)} \\[4pt]
+d_3 &: \frac{\text{Mineur}(x) : \text{TribunalEnfants}(x)}{\text{TribunalEnfants}(x)} \\[4pt]
+d_4 &: \frac{\text{CrimeGrave}(x) : \lnot\text{TribunalEnfants}(x)}{\lnot\text{TribunalEnfants}(x)} \\[4pt]
+d_5 &: \frac{\text{Temoignage}(x) : \text{Acquittement}(x)}{\text{Acquittement}(x)} \\[4pt]
+d_6 &: \frac{\text{Recidiviste}(x) : \lnot\text{Innocent}(x)}{\lnot\text{Innocent}(x)}
+\end{align*}
+\end{tcolorbox}
+
+\subsection{Résultats par individu}
+
+\begin{table}[H]
+\centering
+\caption{Extensions calculées — domaine judiciaire}
+\begin{tabularx}{\linewidth}{lXll}
+\toprule
+\textbf{Individu} & \textbf{Faits $W$} & \textbf{Ext.} & \textbf{Conflit} \\
+\midrule
+Ali   & Accuse + Temoignage & 1 & — \\
+Omar  & Accuse + Recidiviste & 2 & $d_1$ vs $d_6$ \\
+Karim & Accuse + Mineur + CrimeGrave & 2 & $d_3$ vs $d_4$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\noindent\textbf{Ali — extension unique :}
+$E_{\text{ali}} = \{\text{Accuse, Temoignage, Innocent, Acquittement}\}$
+\quad ($d_1$ et $d_5$ s'appliquent sans conflit)
+
+\medskip
+\noindent\textbf{Karim — deux extensions :}
+$d_3$ conclut TribunalEnfants, $d_4$ conclut $\lnot$TribunalEnfants.
+\textbf{Innocent} (issu de $d_1$) est dans les deux extensions : conclusion sceptique.
+
+\section{Implémentation avec TweetyProject}
+
+\begin{lstlisting}[caption={Calcul des extensions avec Tweety RDL}]
+String theory =
+    "Art = {soolking}\n"
+  + "type(EstArtiste(Art))\n"
+  + "type(LibreDroits(Art))\n"
+  + "type(SigneLabel(Art))\n"
+  + "EstArtiste(soolking)\n"
+  + "SigneLabel(soolking)\n"
+  // d1 : EstArtiste(X) :: LibreDroits(X) / LibreDroits(X)
+  + "EstArtiste(X)::LibreDroits(X)/LibreDroits(X)\n"
+  // d2 : SigneLabel(X) :: !LibreDroits(X) / !LibreDroits(X)
+  + "SigneLabel(X)::!LibreDroits(X)/!LibreDroits(X)\n";
+
+RdlParser parser = new RdlParser();
+DefaultTheory dt = parser.parseBeliefBase(theory);
+Collection<Extension> exts =
+    new SimpleDefaultReasoner().getModels(dt.ground());
+// -> 2 extensions (conflit d1 vs d2)
+\end{lstlisting}
+
+\begin{tcolorbox}[notebox, title={Point d'implémentation important}]
+Les théories sont \textbf{séparées par individu} (une théorie pour soolking,
+une pour feu, etc.) pour éviter l'explosion combinatoire du
+\code{DefaultProcessTree} lors du grounding.
+La non-monotonie est démontrée en construisant deux théories : l'originale et
+l'originale augmentée d'un fait supplémentaire.
+\end{tcolorbox}

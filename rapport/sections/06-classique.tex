@@ -1,0 +1,167 @@
+% ============================================================
+%  Chapitre 5 — Logique Classique
+% ============================================================
+\chapter{Logique Classique}
+
+\section{Logique propositionnelle}
+
+\subsection{Fondements}
+
+La \textbf{logique propositionnelle} est le formalisme le plus élémentaire.
+Une formule est construite à partir d'atomes $p, q, r, \ldots$ et des
+connecteurs $\lnot, \land, \lor, \to, \leftrightarrow$.
+
+\noindent La \textbf{forme normale conjonctive} (CNF) est une conjonction de
+clauses, chaque clause étant une disjonction de littéraux :
+\[
+  \underbrace{(l_{11} \lor \ldots \lor l_{1k_1})}_{\text{clause }C_1}
+  \land \ldots \land
+  \underbrace{(l_{m1} \lor \ldots \lor l_{mk_m})}_{\text{clause }C_m}
+\]
+
+\noindent Le problème de \textbf{satisfiabilité} (\textsc{sat}) — trouver une
+valuation qui rend la formule vraie — est NP-complet.
+Le solveur \textbf{SAT4J} résout ce problème de manière efficace en pratique.
+
+\subsection{Application — Industrie musicale}
+
+Les formules modélisent des contraintes sur les artistes et les albums :
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+\textbf{Atome} & \textbf{Signification} \\
+\midrule
+\code{SigneLabel}       & L'artiste est signé chez un label \\
+\code{LibreDroits}      & L'artiste est libre de droits \\
+\code{AlbumSorti}       & L'artiste a sorti un album \\
+\code{Royalties}        & L'artiste perçoit des royalties \\
+\code{AlbumCertifie}    & L'album est certifié \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent\textbf{Clauses :}
+\begin{align*}
+C_1 &= \lnot\text{SigneLabel} \lor \lnot\text{LibreDroits}
+    && \text{(signé $\Rightarrow$ pas libre de droits)} \\
+C_2 &= \lnot\text{AlbumSorti} \lor \text{Royalties}
+    && \text{(album sorti $\Rightarrow$ royalties)} \\
+C_3 &= \lnot\text{SigneLabel} \lor \text{Royalties}
+    && \text{(signé $\Rightarrow$ royalties)} \\
+C_4 &= \text{SigneLabel} \lor \text{LibreDroits}
+    && \text{(signé ou libre)} \\
+C_5 &= \lnot\text{AlbumCertifie} \lor \text{AlbumSorti}
+    && \text{(certifié $\Rightarrow$ sorti)}
+\end{align*}
+
+\subsection{Application — Système judiciaire}
+
+\begin{align*}
+C_1 &= \lnot\text{Coupable} \lor \lnot\text{Innocent}
+    && \text{(exclusion mutuelle)} \\
+C_2 &= \text{Coupable} \lor \text{Innocent}
+    && \text{(tiers exclu)} \\
+C_3 &= \lnot\text{Recidiviste} \lor \text{PeineLourde}
+    && \text{(récidiviste $\Rightarrow$ peine lourde)} \\
+C_4 &= \lnot\text{Mineur} \lor \lnot\text{CourAssises}
+    && \text{(mineur pas en cour d'assises)} \\
+C_5 &= \lnot\text{Temoignage} \lor \text{AcquitPossible}
+    && \text{(témoignage $\Rightarrow$ acquittement possible)}
+\end{align*}
+
+\subsection{Implémentation avec SAT4J}
+
+\begin{lstlisting}[caption={Résolution SAT propositionnelle via Tweety}]
+PlParser parser = new PlParser();
+PlBeliefSet kb = new PlBeliefSet();
+
+// Ajout des clauses (formules)
+kb.add(parser.parseFormula("!SigneLabel || !LibreDroits"));
+kb.add(parser.parseFormula("!AlbumSorti || Royalties"));
+kb.add(parser.parseFormula("SigneLabel || LibreDroits"));
+
+// Requete de satisfiabilite
+Sat4jSolver solver = new Sat4jSolver();
+boolean sat = solver.isSatisfiable(kb);
+// → true : la base est cohérente
+
+// Inference : LibreDroits est-il entraine par SigneLabel=faux ?
+PlFormula query = parser.parseFormula("LibreDroits");
+boolean entailed = solver.isEntailed(kb, query);
+\end{lstlisting}
+
+\section{Logique des prédicats du premier ordre}
+
+\subsection{Fondements}
+
+La \textbf{logique des prédicats du premier ordre} (\textsc{fol}) enrichit la
+logique propositionnelle avec des variables, des prédicats, des fonctions et des
+quantificateurs $\forall$ (universel) et $\exists$ (existentiel).
+
+\noindent Le \textbf{chaînage avant} (\emph{forward chaining}) est une stratégie
+d'inférence qui part des faits connus et applique les règles disponibles pour
+dériver de nouveaux faits, jusqu'à stabilisation.
+
+\subsection{Application — Industrie musicale}
+
+\textbf{Faits initiaux :}
+\begin{align*}
+&\text{Artiste}(\text{soolking}),\quad \text{SigneLabel}(\text{soolking}),\quad
+ \text{AlbumSorti}(\text{soolking}) \\
+&\text{Artiste}(\text{tif}),\quad \text{AlbumSorti}(\text{tif})
+\end{align*}
+
+\textbf{Règles :}
+\begin{align*}
+R_1&: \forall x,\; \text{SigneLabel}(x) \Rightarrow \lnot\text{LibreDroits}(x) \\
+R_2&: \forall x,\; \text{Artiste}(x) \land \text{AlbumSorti}(x)
+       \Rightarrow \text{Royalties}(x) \\
+R_3&: \forall x,\; \text{SigneLabel}(x) \Rightarrow \text{Royalties}(x)
+\end{align*}
+
+\textbf{Dérivations (chaînage avant) :}
+\begin{align*}
+R_1 + \text{SigneLabel(soolking)} &\Rightarrow \lnot\text{LibreDroits(soolking)} \\
+R_2 + \text{Artiste(soolking)} + \text{AlbumSorti(soolking)} &\Rightarrow \text{Royalties(soolking)} \\
+R_2 + \text{Artiste(tif)} + \text{AlbumSorti(tif)} &\Rightarrow \text{Royalties(tif)}
+\end{align*}
+
+\subsection{Application — Système judiciaire}
+
+\textbf{Faits initiaux :}
+\[
+  \text{Accuse(ali)},\quad \text{Accuse(omar)},\quad \text{Recidiviste(omar)},\quad
+  \text{Mineur(karim)},\quad \text{Temoignage(ali)}
+\]
+
+\textbf{Règles :}
+\begin{align*}
+R_1&: \forall x,\; \text{Recidiviste}(x) \Rightarrow \text{PeineLourde}(x) \\
+R_2&: \forall x,\; \text{Mineur}(x) \Rightarrow \text{TribunalEnfants}(x) \\
+R_3&: \forall x,\; \text{Temoignage}(x) \Rightarrow \text{AcquitPossible}(x)
+\end{align*}
+
+\subsection{Implémentation}
+
+\begin{lstlisting}[caption={Chaînage avant avec Tweety FOL}]
+FolParser parser = new FolParser();
+FolBeliefSet kb = new FolBeliefSet();
+
+// Predicats
+kb.getSignature().add(new Predicate("Artiste", 1));
+kb.getSignature().add(new Predicate("SigneLabel", 1));
+kb.getSignature().add(new Predicate("Royalties", 1));
+
+// Faits
+kb.add(parser.parseFormula("Artiste(soolking)"));
+kb.add(parser.parseFormula("SigneLabel(soolking)"));
+
+// Regles (implication universelle)
+kb.add(parser.parseFormula("forall X: (SigneLabel(X) => Royalties(X))"));
+
+// Chainage avant
+NaivePrologReasoner reasoner = new NaivePrologReasoner();
+Collection<FolFormula> derived = reasoner.query(kb,
+    parser.parseFormula("Royalties(soolking)"));
+\end{lstlisting}

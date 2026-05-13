@@ -1,0 +1,109 @@
+% ============================================================
+%  Chapitre 7 — Réseaux Sémantiques
+% ============================================================
+\chapter{Réseaux Sémantiques}
+
+\begin{tcolorbox}[notebox, title={Note}]
+Ce chapitre est pris en charge par le binôme et sera complété avec les
+implémentations finales. La structure ci-dessous définit le cadre théorique
+et les éléments attendus.
+\end{tcolorbox}
+
+\section{Fondements théoriques}
+
+\subsection{Définition}
+
+Un \textbf{réseau sémantique} est un graphe orienté étiqueté dans lequel :
+\begin{itemize}
+  \item les \textbf{nœuds} représentent des concepts ou des individus ;
+  \item les \textbf{arcs} représentent des relations entre ces entités.
+\end{itemize}
+
+\noindent Les relations les plus courantes sont :
+\begin{description}
+  \item[\code{is-a}] relation de spécialisation/généralisation
+        (Rappeur \code{is-a} Artiste) ;
+  \item[\code{instance-of}] relation d'appartenance d'un individu à une classe
+        (soolking \code{instance-of} Rappeur) ;
+  \item[propriétés] relations arbitraires entre nœuds
+        (soolking \code{signe\_chez} universal).
+\end{description}
+
+\subsection{Héritage}
+
+Le mécanisme d'\textbf{héritage} permet à un concept de récupérer les
+propriétés de ses ancêtres dans la hiérarchie \code{is-a}.
+L'héritage peut être :
+\begin{itemize}
+  \item \textbf{simple} : un seul parent ;
+  \item \textbf{multiple} : plusieurs parents (peut engendrer des conflits) ;
+  \item \textbf{avec exceptions} : une propriété héritée peut être redéfinie
+        localement (ex : un pingouin \code{is-a} oiseau, mais ne vole pas).
+\end{itemize}
+
+\noindent L'héritage avec exceptions rend les réseaux sémantiques
+\textbf{non-monotones} : ajouter un nœud ou un arc peut invalider une propriété
+héritée.
+
+\subsection{Exemple conceptuel — domaine musical}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=1.5cm and 2.5cm,
+  concept/.append style={minimum width=3cm}
+]
+  % Concepts
+  \node[concept] (Personne)  {Personne};
+  \node[concept] (Artiste)   [below=of Personne]  {Artiste};
+  \node[concept] (Rappeur)   [below left=of Artiste]  {Rappeur};
+  \node[concept] (Chanteur)  [below right=of Artiste] {Chanteur};
+
+  % Individus
+  \node[concept, fill=yellow!20] (soolking) [below=of Rappeur] {soolking};
+  \node[concept, fill=yellow!20] (universal) [right=3.5cm of Artiste] {universal};
+  \node[concept, fill=green!10]  (Label) [above=of universal] {Label};
+  \node[concept, fill=green!10]  (Major) [above right=of Label] {MajorLabel};
+
+  % is-a arcs
+  \draw[arrow, dashed] (Artiste) -- node[left, font=\footnotesize]{\code{is-a}} (Personne);
+  \draw[arrow, dashed] (Rappeur) -- node[left, font=\footnotesize]{\code{is-a}} (Artiste);
+  \draw[arrow, dashed] (Chanteur) -- node[right, font=\footnotesize]{\code{is-a}} (Artiste);
+  \draw[arrow, dashed] (soolking) -- node[left, font=\footnotesize]{\code{inst.}} (Rappeur);
+  \draw[arrow, dashed] (Major) -- node[right, font=\footnotesize]{\code{is-a}} (Label);
+  \draw[arrow, dashed] (universal) -- node[right, font=\footnotesize]{\code{inst.}} (Major);
+
+  % propriete
+  \draw[arrow, color=red!70] (soolking) -- node[below, font=\footnotesize]
+    {\code{signe\_chez}} (universal);
+\end{tikzpicture}
+\caption{Réseau sémantique — domaine musical (schéma)}
+\label{fig:reseau-music}
+\end{figure}
+
+\section{Application — Industrie musicale}
+
+\textit{[À compléter par le binôme : graphe des concepts musicaux,
+requêtes d'héritage, propriétés héritées par les artistes,
+démonstration des exceptions]}
+
+\section{Application — Système judiciaire}
+
+\textit{[À compléter par le binôme : graphe des acteurs judiciaires,
+hiérarchie des infractions, héritage des peines,
+conflits d'héritage pour les cas complexes]}
+
+\section{Implémentation avec TweetyProject}
+
+\textit{[À compléter par le binôme avec les extraits de code]}
+
+\begin{lstlisting}[caption={Structure d'un réseau sémantique avec Tweety (exemple)}]
+// A completer par le binome
+// Exemple de structure attendue :
+//
+// SimpleGraph<SemanticNetworkNode> graph = new SimpleGraph<>();
+// SemanticNetworkNode artiste = new SemanticNetworkNode("Artiste");
+// SemanticNetworkNode rappeur = new SemanticNetworkNode("Rappeur");
+// graph.add(artiste); graph.add(rappeur);
+// graph.add(new DirectedEdge<>(rappeur, artiste, "is-a"));
+\end{lstlisting}

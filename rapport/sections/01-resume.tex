@@ -1,0 +1,50 @@
+% ============================================================
+%  Résumé
+% ============================================================
+\chapter*{Résumé}
+\addcontentsline{toc}{chapter}{Résumé}
+\markboth{Résumé}{Résumé}
+
+Ce rapport présente la conception et l'implémentation d'un système complet de
+représentation des connaissances et de raisonnement (\textsc{rcr}), développé
+dans le cadre du module \textsc{rcr1} du Master~1 \textsc{sii} à l'\textsc{usthb}.
+
+Le projet met en œuvre cinq formalismes classiques de la représentation des
+connaissances, appliqués à deux domaines concrets : l'\textbf{industrie musicale
+algérienne} (artistes, labels, albums, certifications) et le
+\textbf{système judiciaire} (accusés, magistrats, infractions, tribunaux).
+
+\medskip
+\noindent Les formalismes implémentés sont :
+
+\begin{itemize}
+  \item \textbf{Logique Modale} — modèles de Kripke, opérateurs de nécessité
+        ($\nec$) et de possibilité ($\pos$), évaluation sémantique dans des
+        mondes possibles.
+  \item \textbf{Logique des Défauts} — théories de Reiter $\Delta = (W, D)$,
+        calcul d'extensions, raisonnement non-monotone.
+  \item \textbf{Logique Classique} — logique propositionnelle en forme normale
+        conjonctive (CNF) résolue par SAT4J, et logique des prédicats du premier
+        ordre avec chaînage avant.
+  \item \textbf{Logique de Description} — ontologies OWL~2 construites via
+        l'OWL~API~4.5, raisonnées par le moteur HermiT~1.4.3 ; TBox/ABox,
+        subsomption, disjonction, classification des individus.
+  \item \textbf{Réseaux Sémantiques} — graphes de concepts avec héritage et
+        exceptions via TweetyProject.
+\end{itemize}
+
+\medskip
+\noindent L'ensemble est accessible via une \textbf{interface graphique JavaFX~17}
+interactive organisée en tableau de bord, avec un panneau dédié à chaque
+formalisme, un affichage des résultats du raisonneur en arrière-plan, et une
+démonstration explicite de la non-monotonie pour les logiques qui la supportent.
+
+Le code source est disponible sur GitHub :
+\url{https://github.com/D-Arslan/knowledge-representation-reasoning}
+
+\bigskip
+\noindent\textbf{Mots-clés :} représentation des connaissances, raisonnement,
+logique modale, logique des défauts, logique de description, réseaux sémantiques,
+OWL, HermiT, TweetyProject, non-monotonie.
+
+\newpage

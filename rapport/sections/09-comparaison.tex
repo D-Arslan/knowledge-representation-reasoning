@@ -1,0 +1,171 @@
+% ============================================================
+%  Chapitre 8 — Comparaison des formalismes
+% ============================================================
+\chapter{Comparaison des formalismes}
+
+\section{Tableau comparatif}
+
+\begin{table}[H]
+\centering
+\caption{Comparaison des cinq formalismes implémentés}
+\label{tab:comparaison}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{lXXXXX}
+\toprule
+& \textbf{Modale} & \textbf{Défauts} & \textbf{Classique} & \textbf{Description} & \textbf{Rés. Sém.} \\
+\midrule
+\textbf{Monotone}
+  & \textcolor{codegreen}{Oui}
+  & \textcolor{red}{Non}
+  & \textcolor{codegreen}{Oui}
+  & \textcolor{codegreen}{Oui}
+  & \textcolor{red}{Non*} \\
+
+\textbf{Monde ouvert (OWA)}
+  & Non
+  & Non
+  & Non
+  & \textcolor{codegreen}{Oui}
+  & Non \\
+
+\textbf{Exceptions}
+  & Non
+  & \textcolor{codegreen}{Oui}
+  & Non
+  & Partiel
+  & \textcolor{codegreen}{Oui} \\
+
+\textbf{Quantificateurs}
+  & Non
+  & \textcolor{codegreen}{Oui (FOL)}
+  & \textcolor{codegreen}{Oui (FOL)}
+  & \textcolor{codegreen}{Oui ($\exists$, $\forall$)}
+  & Non \\
+
+\textbf{Mondes poss.}
+  & \textcolor{codegreen}{Oui}
+  & Non
+  & Non
+  & Non
+  & Non \\
+
+\textbf{Complexité}
+  & PSPACE
+  & $\Pi_2^P$
+  & NP (SAT)
+  & ExpTime
+  & P \\
+
+\textbf{Outil}
+  & Tweety ML
+  & Tweety RDL
+  & SAT4J / Tweety
+  & OWL API + HermiT
+  & Tweety \\
+
+\textbf{Standard}
+  & Logiques K/T/S4/S5
+  & Reiter 1980
+  & ---
+  & OWL 2 (W3C)
+  & ---\\
+\bottomrule
+\multicolumn{6}{l}{\small * avec héritage à exceptions}
+\end{tabularx}
+\end{table}
+
+\section{Expressivité et pouvoir de représentation}
+
+\paragraph{Logique classique} C'est le socle — elle permet de vérifier la
+cohérence et de dériver des conséquences, mais elle est monotone et ne permet
+pas de représenter l'incertitude ou les exceptions.
+
+\paragraph{Logique modale} Ajoute la notion de \emph{point de vue} et de
+\emph{mondes possibles} : on peut exprimer ce qui est vrai dans tous les scénarios
+($\nec$) ou dans au moins un ($\pos$). Particulièrement adaptée au raisonnement
+épistémique (ce qu'un agent \emph{sait} ou \emph{croit}).
+
+\paragraph{Logique des défauts} Permet le raisonnement avec des \emph{règles
+générales avec exceptions}. Le résultat (extensions) n'est pas unique en cas
+de conflits — deux agents raisonnables peuvent tirer des conclusions différentes.
+C'est le formalisme le plus adapté au raisonnement du sens commun.
+
+\paragraph{Logique de description} Offre un cadre rigoureux et standardisé
+(OWL~2) pour la modélisation de hiérarchies de concepts complexes.
+Le raisonneur HermiT garantit la complétude et la correction.
+L'OWA la distingue des autres formalismes.
+
+\paragraph{Réseaux sémantiques} Simple et intuitif, particulièrement adapté
+à la représentation de hiérarchies et à l'héritage de propriétés. Moins
+expressif que la logique de description mais plus lisible pour des non-experts.
+
+\section{Traitement de la non-monotonie}
+
+\begin{table}[H]
+\centering
+\caption{Mécanismes de non-monotonie par formalisme}
+\begin{tabularx}{\linewidth}{lXX}
+\toprule
+\textbf{Formalisme} & \textbf{Mécanisme} & \textbf{Illustration dans le projet} \\
+\midrule
+Logique des défauts
+  & Ajout d'un fait dans $W$ peut invalider une conclusion d'extension
+  & SigneLabel(flenn) invalide LibreDroits \\
+Réseaux sémantiques
+  & Redéfinition locale d'une propriété héritée
+  & Exception à l'héritage \\
+Logique de description
+  & Non-monotonie simulée via deux ontologies distinctes
+  & signe\_chez(flenn, universal) invalide l'assertion ArtisteLibreDroits \\
+Logique modale
+  & Pas de non-monotonie intrinsèque
+  & --- \\
+Logique classique
+  & Pas de non-monotonie intrinsèque
+  & --- \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Quand utiliser quel formalisme ?}
+
+\begin{description}
+  \item[Logique classique] Vérification formelle, contraintes dures,
+        satisfiabilité, inférence déterministe. Idéal pour les systèmes
+        où toutes les règles sont certaines et sans exception.
+
+  \item[Logique modale] Raisonnement sur des états alternatifs du monde :
+        croyances, obligations, permissions, temps. Adapté aux systèmes
+        multi-agents, au droit, et à la vérification de protocoles.
+
+  \item[Logique des défauts] Raisonnement du sens commun avec exceptions et
+        révision de croyances. Adapté aux systèmes experts où les règles ont
+        des exceptions et les informations peuvent être incomplètes.
+
+  \item[Logique de description] Modélisation formelle de domaines structurés
+        (ontologies). Adapté au Web sémantique, aux bases de connaissances
+        médicales, juridiques ou scientifiques (interopérabilité via OWL).
+
+  \item[Réseaux sémantiques] Représentation simple et visuelle de hiérarchies.
+        Adapté aux applications nécessitant une sémantique lisible par des
+        humains, comme les systèmes de recommandation ou les moteurs de recherche.
+\end{description}
+
+\section{Cohérence entre les domaines d'application}
+
+Un point fort de ce projet est l'application systématique des cinq formalismes
+aux \emph{mêmes domaines}. Cela permet d'observer comment chaque formalisme
+capture différents aspects du même problème.
+
+\begin{tcolorbox}[resultbox, title={Exemple : Flenn (industrie musicale)}]
+\begin{itemize}
+  \item \textbf{Défauts :} avant SigneLabel $\to$ extension \{LibreDroits\} ;
+        après SigneLabel $\to$ deux extensions (conflit $d_1$/$d_2$).
+  \item \textbf{DL :} avant signe\_chez $\to$ ArtisteLibreDroits=VRAI ;
+        après signe\_chez $\to$ ArtisteLibreDroits=FAUX.
+  \item \textbf{Modale :} le monde $w_3$ (artiste indépendant) est accessbile
+        depuis $w_1$ (label) : $\pos\,\text{artiste\_independant}$ en $w_1$.
+  \item \textbf{Classique :} clause $C_1 = \lnot\text{SigneLabel} \lor
+        \lnot\text{LibreDroits}$ — cohérence vérifiée par SAT4J.
+\end{itemize}
+\end{tcolorbox}
