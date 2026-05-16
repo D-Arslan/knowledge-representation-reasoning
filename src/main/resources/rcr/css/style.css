@@ -63,6 +63,30 @@
     -fx-effect: dropshadow(gaussian, #cba6f7bb, 22, 0, 0, 0);
 }
 
+/* Card — Logique Classique (red) */
+.card-classique {
+    -fx-background-color: #1e1e2e;
+    -fx-border-color: #f38ba8;
+    -fx-effect: dropshadow(gaussian, #f38ba855, 12, 0, 0, 0);
+}
+
+.card-classique:hover {
+    -fx-background-color: #2d1b24;
+    -fx-effect: dropshadow(gaussian, #f38ba8bb, 22, 0, 0, 0);
+}
+
+/* Card — Réseaux Sémantiques (green) */
+.card-semantic {
+    -fx-background-color: #1e1e2e;
+    -fx-border-color: #a6e3a1;
+    -fx-effect: dropshadow(gaussian, #a6e3a155, 12, 0, 0, 0);
+}
+
+.card-semantic:hover {
+    -fx-background-color: #1a2b1e;
+    -fx-effect: dropshadow(gaussian, #a6e3a1bb, 22, 0, 0, 0);
+}
+
 /* Card — disabled */
 .card-disabled {
     -fx-background-color: #181825;
@@ -82,6 +106,16 @@
 .card-icon-disabled {
     -fx-font-size: 34px;
     -fx-text-fill: #45475a;
+}
+
+.card-icon-classique {
+    -fx-font-size: 34px;
+    -fx-text-fill: #f38ba8;
+}
+
+.card-icon-semantic {
+    -fx-font-size: 34px;
+    -fx-text-fill: #a6e3a1;
 }
 
 .card-title {
@@ -137,23 +171,6 @@
     -fx-background-color: #e0c4ff;
 }
 
-/* Card — Logique Classique (red) */
-.card-classique {
-    -fx-background-color: #1e1e2e;
-    -fx-border-color: #f38ba8;
-    -fx-effect: dropshadow(gaussian, #f38ba855, 12, 0, 0, 0);
-}
-
-.card-classique:hover {
-    -fx-background-color: #2d1b24;
-    -fx-effect: dropshadow(gaussian, #f38ba8bb, 22, 0, 0, 0);
-}
-
-.card-icon-classique {
-    -fx-font-size: 34px;
-    -fx-text-fill: #f38ba8;
-}
-
 .btn-classique {
     -fx-background-color: #f38ba8;
     -fx-text-fill: #1e1e2e;
@@ -161,6 +178,15 @@
 
 .btn-classique:hover {
     -fx-background-color: #ffb3c6;
+}
+
+.btn-semantic {
+    -fx-background-color: #a6e3a1;
+    -fx-text-fill: #1e1e2e;
+}
+
+.btn-semantic:hover {
+    -fx-background-color: #c4f0c0;
 }
 
 /* ---- Footer ---- */

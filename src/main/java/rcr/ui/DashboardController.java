@@ -6,6 +6,7 @@ import javafx.stage.Stage;
 import rcr.ui.classical.ClassicalLogicController;
 import rcr.ui.defaut.DefaultLogicController;
 import rcr.ui.modal.ModalLogicController;
+import rcr.ui.semantic.SemanticNetworkController;
 
 public class DashboardController {
 
@@ -30,6 +31,14 @@ public class DashboardController {
         Stage stage = new Stage();
         stage.setTitle("Logique Classique — Propositionnelle & Prédicats");
         stage.setScene(new Scene(new ClassicalLogicController().buildUI(), 980, 720));
+        stage.show();
+    }
+
+    @FXML
+    public void openSemantic() {
+        Stage stage = new Stage();
+        stage.setTitle("Réseaux Sémantiques — Propagation de Marqueurs");
+        stage.setScene(new Scene(new SemanticNetworkController().buildUI(), 1150, 720));
         stage.show();
     }
 }

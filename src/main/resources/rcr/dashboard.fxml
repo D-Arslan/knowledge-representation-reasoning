@@ -7,10 +7,9 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
 <?import javafx.geometry.Insets?>
-
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="rcr.ui.DashboardController"
-            prefWidth="900" prefHeight="700"
+            prefWidth="960" prefHeight="750"
             styleClass="root-pane">
 
     <!-- ===== HEADER ===== -->
@@ -64,13 +63,16 @@
                         styleClass="card-btn,btn-classique"/>
             </VBox>
 
-            <!-- Card 4 — Logique de Description (grisé) -->
+            <!-- Card 4 — Réseaux Sémantiques -->
             <VBox GridPane.columnIndex="1" GridPane.rowIndex="1"
                   prefWidth="310" prefHeight="210"
-                  styleClass="card,card-disabled" alignment="CENTER" spacing="14">
-                <Label text="◎" styleClass="card-icon-disabled"/>
-                <Label text="Logique de Description" styleClass="card-title-disabled"/>
-                <Label text="Bientôt disponible" styleClass="card-soon"/>
+                  styleClass="card,card-semantic" alignment="CENTER" spacing="14">
+                <Label text="◎" styleClass="card-icon-semantic"/>
+                <Label text="Réseaux Sémantiques" styleClass="card-title"/>
+                <Label text="Propagation de marqueurs · Héritage · Exceptions"
+                       styleClass="card-desc" wrapText="true"/>
+                <Button text="Lancer  →" onAction="#openSemantic"
+                        styleClass="card-btn,btn-semantic"/>
             </VBox>
 
         </GridPane>
@@ -83,5 +85,4 @@
             <padding><Insets top="10" bottom="12"/></padding>
         </Label>
     </bottom>
-
 </BorderPane>
