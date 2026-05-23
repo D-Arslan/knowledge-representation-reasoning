@@ -35,14 +35,45 @@ public class PropositionalLogicMusic {
         return d;
     }
 
-    /** KB est satisfiable ssi elle n'entraine pas un atome frais (absent de toute clause). */
-    private static boolean isSat(PlBeliefSet kb) {
-        return !REASONER.query(kb, FRESH);
+    /** Alias historiquement utilisés dans run() — délèguent aux versions publiques. */
+    private static boolean isSat(PlBeliefSet kb) { return isSatisfiable(kb); }
+
+    /**
+     * Construit la KB de base (faits + 5 clauses CNF). Exposée pour que la GUI
+     * puisse lancer des requêtes interactives sans re-exécuter toute la console.
+     */
+    public static PlBeliefSet buildKB() {
+        Proposition soolking   = new Proposition("soolking");
+        Proposition feu        = new Proposition("feu");
+        Proposition tif        = new Proposition("tif");
+        Proposition flenn      = new Proposition("flenn");
+        Proposition sl_s       = new Proposition("signe_soolking");
+        Proposition sl_f       = new Proposition("signe_feu");
+        Proposition indep_f    = new Proposition("indep_feu");
+        Proposition partage_s  = new Proposition("partage_soolking");
+        Proposition partage_f  = new Proposition("partage_feu");
+        Proposition royal_t    = new Proposition("royalties_tif");
+        Proposition royal_fl   = new Proposition("royalties_flenn");
+        Proposition exp_f      = new Proposition("expsolo_feu");
+        PlBeliefSet kb = new PlBeliefSet();
+        kb.add(soolking); kb.add(feu); kb.add(tif); kb.add(flenn);
+        kb.add(sl_s); kb.add(sl_f); kb.add(indep_f);
+        kb.add(or(neg(soolking), neg(sl_s), partage_s));   // c1
+        kb.add(or(neg(feu), neg(sl_f), partage_f));        // c2
+        kb.add(or(neg(tif), royal_t));                     // c3
+        kb.add(or(neg(flenn), royal_fl));                  // c4
+        kb.add(or(neg(indep_f), exp_f));                   // c5
+        return kb;
     }
 
-    /** KB |= phi  via le raisonneur SAT (equivalent a la refutation). */
-    private static boolean entails(PlBeliefSet kb, PlFormula phi) {
+    /** Teste si KB |= phi via le raisonneur SAT (pour la GUI). */
+    public static boolean entails(PlBeliefSet kb, PlFormula phi) {
         return REASONER.query(kb, phi);
+    }
+
+    /** Teste la satisfiabilité d'une KB arbitraire (pour la GUI). */
+    public static boolean isSatisfiable(PlBeliefSet kb) {
+        return !REASONER.query(kb, FRESH);
     }
 
     public static void run() {

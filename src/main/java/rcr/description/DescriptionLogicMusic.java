@@ -30,6 +30,197 @@ public class DescriptionLogicMusic {
     }
 
     // ---------------------------------------------------------------
+    // Construction publique de l'ontologie (utilisée par la GUI pour
+    // interroger HermiT en interactif sans relancer toutes les requêtes).
+    // Code dupliqué de run() pour ne pas casser le mode console.
+    // ---------------------------------------------------------------
+    public static OWLOntology buildOntology() {
+        OWLOntologyManager mgr = OWLManager.createOWLOntologyManager();
+        try {
+            OWLOntology onto = mgr.createOntology(IRI.create("http://rcr1/musique"));
+            OWLDataFactory f = mgr.getOWLDataFactory();
+
+            // ===== Classes =====
+            OWLClass Personne           = f.getOWLClass(iri("Personne"));
+            OWLClass Organisation       = f.getOWLClass(iri("Organisation"));
+            OWLClass Artiste            = f.getOWLClass(iri("Artiste"));
+            OWLClass Rappeur            = f.getOWLClass(iri("Rappeur"));
+            OWLClass RappeurAlgerien    = f.getOWLClass(iri("RappeurAlgerien"));
+            OWLClass Chanteur           = f.getOWLClass(iri("Chanteur"));
+            OWLClass DJ                 = f.getOWLClass(iri("DJ"));
+            OWLClass Compositeur        = f.getOWLClass(iri("Compositeur"));
+            OWLClass Label              = f.getOWLClass(iri("Label"));
+            OWLClass MajorLabel         = f.getOWLClass(iri("MajorLabel"));
+            OWLClass IndependantLabel   = f.getOWLClass(iri("IndependantLabel"));
+            OWLClass Oeuvre             = f.getOWLClass(iri("Oeuvre"));
+            OWLClass Album              = f.getOWLClass(iri("Album"));
+            OWLClass Titre              = f.getOWLClass(iri("Titre"));
+            OWLClass TitreRap           = f.getOWLClass(iri("TitreRap"));
+            OWLClass Chanson            = f.getOWLClass(iri("Chanson"));
+            OWLClass Rap                = f.getOWLClass(iri("Rap"));
+            OWLClass AlbumCertifie      = f.getOWLClass(iri("AlbumCertifie"));
+            OWLClass AlbumOr            = f.getOWLClass(iri("AlbumOr"));
+            OWLClass AlbumPlatine       = f.getOWLClass(iri("AlbumPlatine"));
+            OWLClass Certification      = f.getOWLClass(iri("Certification"));
+            OWLClass CertificationOr    = f.getOWLClass(iri("CertificationOr"));
+            OWLClass CertificationPlatine = f.getOWLClass(iri("CertificationPlatine"));
+            OWLClass PlusDe100Artistes  = f.getOWLClass(iri("PlusDe100Artistes"));
+            OWLClass ArtisteEtranger    = f.getOWLClass(iri("ArtisteEtranger"));
+            OWLClass Darija             = f.getOWLClass(iri("Darija"));
+            OWLClass PlusDe5Ans         = f.getOWLClass(iri("PlusDe5Ans"));
+            OWLClass ArtisteSigné       = f.getOWLClass(iri("ArtisteSigne"));
+            OWLClass ArtisteMajor       = f.getOWLClass(iri("ArtisteMajor"));
+            OWLClass ArtisteIndependant = f.getOWLClass(iri("ArtisteIndependant"));
+            OWLClass ArtisteLibreDroits = f.getOWLClass(iri("ArtisteLibreDroits"));
+            OWLClass Featuring          = f.getOWLClass(iri("Featuring"));
+            OWLClass CollabInternationale = f.getOWLClass(iri("CollabInternationale"));
+            OWLClass ArtisteAvecRoyalties    = f.getOWLClass(iri("ArtisteAvecRoyalties"));
+            OWLClass ArtistePartageRoyalties = f.getOWLClass(iri("ArtistePartageRoyalties"));
+            OWLClass ArtisteExperimente      = f.getOWLClass(iri("ArtisteExperimente"));
+
+            // ===== Object Properties =====
+            OWLObjectProperty produit         = f.getOWLObjectProperty(iri("produit"));
+            OWLObjectProperty pratique        = f.getOWLObjectProperty(iri("pratique"));
+            OWLObjectProperty chante_en       = f.getOWLObjectProperty(iri("chante_en"));
+            OWLObjectProperty interprete      = f.getOWLObjectProperty(iri("interprete"));
+            OWLObjectProperty mixe            = f.getOWLObjectProperty(iri("mixe"));
+            OWLObjectProperty compose         = f.getOWLObjectProperty(iri("compose"));
+            OWLObjectProperty distribue       = f.getOWLObjectProperty(iri("distribue"));
+            OWLObjectProperty signe           = f.getOWLObjectProperty(iri("signe"));
+            OWLObjectProperty signe_chez      = f.getOWLObjectProperty(iri("signe_chez"));
+            OWLObjectProperty contient        = f.getOWLObjectProperty(iri("contient"));
+            OWLObjectProperty produit_par     = f.getOWLObjectProperty(iri("produit_par"));
+            OWLObjectProperty recoit          = f.getOWLObjectProperty(iri("recoit"));
+            OWLObjectProperty implique        = f.getOWLObjectProperty(iri("implique"));
+            OWLObjectProperty annees_carriere = f.getOWLObjectProperty(iri("annees_carriere"));
+
+            // ===== TBox =====
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(Artiste,
+                f.getOWLObjectIntersectionOf(Personne,
+                    f.getOWLObjectSomeValuesFrom(produit, Oeuvre))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(Rappeur,
+                f.getOWLObjectIntersectionOf(Artiste,
+                    f.getOWLObjectSomeValuesFrom(pratique, Rap),
+                    f.getOWLObjectAllValuesFrom(produit, TitreRap))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(RappeurAlgerien,
+                f.getOWLObjectIntersectionOf(Rappeur,
+                    f.getOWLObjectSomeValuesFrom(chante_en, Darija))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(Chanteur,
+                f.getOWLObjectIntersectionOf(Artiste,
+                    f.getOWLObjectSomeValuesFrom(interprete, Chanson))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(DJ,
+                f.getOWLObjectIntersectionOf(Artiste,
+                    f.getOWLObjectSomeValuesFrom(mixe, Titre))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(Compositeur,
+                f.getOWLObjectIntersectionOf(Artiste,
+                    f.getOWLObjectSomeValuesFrom(compose, Oeuvre))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(Label,
+                f.getOWLObjectIntersectionOf(Organisation,
+                    f.getOWLObjectSomeValuesFrom(distribue, Album))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(MajorLabel,
+                f.getOWLObjectIntersectionOf(Label,
+                    f.getOWLObjectSomeValuesFrom(signe, PlusDe100Artistes))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(IndependantLabel,
+                f.getOWLObjectIntersectionOf(Label,
+                    f.getOWLObjectComplementOf(MajorLabel))));
+            ax(mgr, onto, f.getOWLSubClassOfAxiom(Titre, Oeuvre));
+            ax(mgr, onto, f.getOWLSubClassOfAxiom(TitreRap, Titre));
+            ax(mgr, onto, f.getOWLSubClassOfAxiom(MajorLabel, Label));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(Album,
+                f.getOWLObjectIntersectionOf(Oeuvre,
+                    f.getOWLObjectSomeValuesFrom(contient, Titre),
+                    f.getOWLObjectSomeValuesFrom(produit_par, Artiste))));
+            ax(mgr, onto, f.getOWLSubClassOfAxiom(CertificationOr, Certification));
+            ax(mgr, onto, f.getOWLSubClassOfAxiom(CertificationPlatine, Certification));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(AlbumCertifie,
+                f.getOWLObjectIntersectionOf(Album,
+                    f.getOWLObjectSomeValuesFrom(recoit, Certification))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(AlbumOr,
+                f.getOWLObjectIntersectionOf(AlbumCertifie,
+                    f.getOWLObjectSomeValuesFrom(recoit, CertificationOr))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(AlbumPlatine,
+                f.getOWLObjectIntersectionOf(AlbumCertifie,
+                    f.getOWLObjectSomeValuesFrom(recoit, CertificationPlatine))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(ArtisteSigné,
+                f.getOWLObjectIntersectionOf(Artiste,
+                    f.getOWLObjectSomeValuesFrom(signe_chez, Label))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(ArtisteMajor,
+                f.getOWLObjectIntersectionOf(Artiste,
+                    f.getOWLObjectSomeValuesFrom(signe_chez, MajorLabel))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(ArtisteIndependant,
+                f.getOWLObjectIntersectionOf(Artiste,
+                    f.getOWLObjectComplementOf(
+                        f.getOWLObjectSomeValuesFrom(signe_chez, MajorLabel)))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(ArtisteLibreDroits,
+                f.getOWLObjectIntersectionOf(Artiste,
+                    f.getOWLObjectComplementOf(
+                        f.getOWLObjectSomeValuesFrom(signe_chez, Label)))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(Featuring,
+                f.getOWLObjectIntersectionOf(Titre,
+                    f.getOWLObjectSomeValuesFrom(implique, Artiste),
+                    f.getOWLObjectSomeValuesFrom(implique, ArtisteEtranger))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(CollabInternationale,
+                f.getOWLObjectIntersectionOf(Featuring,
+                    f.getOWLObjectSomeValuesFrom(implique, RappeurAlgerien),
+                    f.getOWLObjectSomeValuesFrom(implique, ArtisteEtranger))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(ArtisteAvecRoyalties,
+                f.getOWLObjectIntersectionOf(Artiste,
+                    f.getOWLObjectSomeValuesFrom(produit, Album))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(ArtistePartageRoyalties,
+                f.getOWLObjectIntersectionOf(ArtisteAvecRoyalties,
+                    f.getOWLObjectSomeValuesFrom(signe_chez, Label))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(ArtisteExperimente,
+                f.getOWLObjectIntersectionOf(Artiste,
+                    f.getOWLObjectSomeValuesFrom(annees_carriere, PlusDe5Ans))));
+
+            // ===== Individuals =====
+            OWLNamedIndividual soolking      = f.getOWLNamedIndividual(iri("soolking"));
+            OWLNamedIndividual feu           = f.getOWLNamedIndividual(iri("feu"));
+            OWLNamedIndividual tif           = f.getOWLNamedIndividual(iri("tif"));
+            OWLNamedIndividual flenn         = f.getOWLNamedIndividual(iri("flenn"));
+            OWLNamedIndividual universal     = f.getOWLNamedIndividual(iri("universal"));
+            OWLNamedIndividual believe       = f.getOWLNamedIndividual(iri("believe"));
+            OWLNamedIndividual guerilla      = f.getOWLNamedIndividual(iri("guerilla"));
+            OWLNamedIndividual derniereHeure = f.getOWLNamedIndividual(iri("derniere_heure"));
+            OWLNamedIndividual certOr        = f.getOWLNamedIndividual(iri("certification_or"));
+            OWLNamedIndividual certPlatine   = f.getOWLNamedIndividual(iri("certification_platine"));
+
+            ax(mgr, onto, f.getOWLDifferentIndividualsAxiom(
+                soolking, feu, tif, flenn,
+                universal, believe,
+                guerilla, derniereHeure,
+                certOr, certPlatine));
+
+            // ===== ABox — assertions de classes =====
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(RappeurAlgerien, soolking));
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(RappeurAlgerien, feu));
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(RappeurAlgerien, tif));
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(RappeurAlgerien, flenn));
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(MajorLabel, universal));
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(IndependantLabel, believe));
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(Album, guerilla));
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(Album, derniereHeure));
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(CertificationOr, certOr));
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(CertificationPlatine, certPlatine));
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(ArtisteLibreDroits, tif));
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(ArtisteLibreDroits, flenn));
+
+            // ===== ABox — assertions de propriétés =====
+            ax(mgr, onto, f.getOWLObjectPropertyAssertionAxiom(signe_chez, soolking, universal));
+            ax(mgr, onto, f.getOWLObjectPropertyAssertionAxiom(signe_chez, feu, believe));
+            ax(mgr, onto, f.getOWLObjectPropertyAssertionAxiom(produit, soolking, guerilla));
+            ax(mgr, onto, f.getOWLObjectPropertyAssertionAxiom(produit, feu, derniereHeure));
+            ax(mgr, onto, f.getOWLObjectPropertyAssertionAxiom(produit, tif, guerilla));
+            ax(mgr, onto, f.getOWLObjectPropertyAssertionAxiom(recoit, guerilla, certOr));
+            ax(mgr, onto, f.getOWLObjectPropertyAssertionAxiom(recoit, derniereHeure, certPlatine));
+
+            return onto;
+        } catch (OWLOntologyCreationException e) {
+            throw new RuntimeException("Erreur construction ontologie musique : " + e.getMessage(), e);
+        }
+    }
+
+    // ---------------------------------------------------------------
     // Point d'entrée
     // ---------------------------------------------------------------
     public static void run() {

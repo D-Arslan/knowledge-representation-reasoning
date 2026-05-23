@@ -3,25 +3,21 @@
 % ============================================================
 \chapter{Réseaux Sémantiques}
 
-\begin{tcolorbox}[notebox, title={Note}]
-Ce chapitre est pris en charge par le binôme et sera complété avec les
-implémentations finales. La structure ci-dessous définit le cadre théorique
-et les éléments attendus.
-\end{tcolorbox}
-
 \section{Fondements théoriques}
 
 \subsection{Définition}
 
-Un \textbf{réseau sémantique} est un graphe orienté étiqueté dans lequel :
+Un \textbf{réseau sémantique} (Quillian, 1968) est un graphe orienté étiqueté
+dans lequel :
 \begin{itemize}
-  \item les \textbf{nœuds} représentent des concepts ou des individus ;
+  \item les \textbf{nœuds} représentent des \emph{concepts} (rectangles) ou des
+        \emph{individus} (ovales) ;
   \item les \textbf{arcs} représentent des relations entre ces entités.
 \end{itemize}
 
 \noindent Les relations les plus courantes sont :
 \begin{description}
-  \item[\code{is-a}] relation de spécialisation/généralisation
+  \item[\code{is-a}] relation de spécialisation / généralisation
         (Rappeur \code{is-a} Artiste) ;
   \item[\code{instance-of}] relation d'appartenance d'un individu à une classe
         (soolking \code{instance-of} Rappeur) ;
@@ -29,81 +25,354 @@ Un \textbf{réseau sémantique} est un graphe orienté étiqueté dans lequel :
         (soolking \code{signe\_chez} universal).
 \end{description}
 
-\subsection{Héritage}
+\subsection{Styles d'arcs \texttt{is-a} (cours USTHB, chapitre 5)}
 
-Le mécanisme d'\textbf{héritage} permet à un concept de récupérer les
-propriétés de ses ancêtres dans la hiérarchie \code{is-a}.
-L'héritage peut être :
+Le cours distingue quatre styles d'arcs is-a, dont la combinaison permet de
+représenter des règles \emph{typiques} et leurs \emph{exceptions} :
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Style} & \textbf{Code} & \textbf{Sémantique} \\
+\midrule
+sorte-de strict                   & \code{S}  & règle absolue, aucune exception possible \\
+sorte-de non-strict               & \code{NS} & règle typique (« en général ») \\
+exception stricte                 & \code{ES} & annule définitivement une propriété héritée \\
+exception non-stricte             & \code{EN} & annule typiquement une propriété héritée \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Une \textbf{relation niée} (lien barré, noté $\lnot R$) annule la
+relation $R$ entre deux nœuds. C'est par ce mécanisme que l'on exprime, par
+exemple, qu'un \texttt{ArtisteIndep} n'est \emph{pas} sous-contrat avec un
+\texttt{Label} alors qu'il hérite de la classe \texttt{Artiste}.
+
+\subsection{Héritage et non-monotonie}
+
+L'héritage permet à un nœud de récupérer les propriétés de ses ancêtres dans la
+hiérarchie \code{is-a}. La présence d'exceptions \code{ES}/\code{EN} le rend
+\textbf{non-monotone} : l'ajout d'un fait (un nouvel arc) peut invalider une
+conclusion précédemment dérivée. C'est l'analogue conceptuel de la logique des
+défauts, mais représenté graphiquement.
+
+\subsection{Modalités (cours USTHB, exemples 9 et 10)}
+
+Les modalités épistémiques (\emph{croire}, \emph{savoir}, \emph{vouloir}) ne
+sont \emph{pas} représentées par un style d'arc dédié. Le cours les construit
+\textbf{structurellement} via des nœuds-instances de classes modales
+\code{Croyances}, \code{Negations} reliés par les rôles \code{agent},
+\code{objet}, \code{argument}.
+
+\begin{tcolorbox}[notebox, title={Construction modale partitionnée}]
+« Le Procureur croit que l'accusé est coupable » se modélise par :
 \begin{itemize}
-  \item \textbf{simple} : un seul parent ;
-  \item \textbf{multiple} : plusieurs parents (peut engendrer des conflits) ;
-  \item \textbf{avec exceptions} : une propriété héritée peut être redéfinie
-        localement (ex : un pingouin \code{is-a} oiseau, mais ne vole pas).
+  \item $C_1$ \code{is-a} Croyances
+  \item $C_1 \xrightarrow{\text{agent}}$ Procureur
+  \item $C_1 \xrightarrow{\text{objet}}$ Culpabilité
 \end{itemize}
 
-\noindent L'héritage avec exceptions rend les réseaux sémantiques
-\textbf{non-monotones} : ajouter un nœud ou un arc peut invalider une propriété
-héritée.
+\noindent « L'avocat de défense \emph{ne croit pas} en la culpabilité » se modélise
+en niant la \emph{modalité} :
+\begin{itemize}
+  \item $C_2 \xrightarrow{\text{agent}}$ AvocatDéfense, $C_2 \xrightarrow{\text{objet}}$ Culpabilité
+  \item $N_1$ \code{is-a} Negations, $N_1 \xrightarrow{\text{argument}} C_2$
+\end{itemize}
+\end{tcolorbox}
 
-\subsection{Exemple conceptuel — domaine musical}
+\section{Moteur d'inférence}
+
+\subsection{Propagation de marqueurs (Fahlman, 1979)}
+
+L'algorithme classique de Fahlman procède en trois étapes :
+\begin{enumerate}
+  \item Marquer le nœud source par $M_1$ et le nœud requête par $M_2$.
+  \item Propager $M_1$ et $M_2$ \emph{en sens inverse} des arcs \code{is-a}
+        (par BFS) jusqu'à saturer.
+  \item Les nœuds doublement marqués ($M_1 \cap M_2$) répondent à la question
+        d'appartenance hiérarchique.
+\end{enumerate}
+
+\subsection{Héritage avec exceptions}
+
+Le moteur implémenté dans le projet va plus loin que la simple propagation :
+il évalue effectivement la \emph{relation cible} en respectant les exceptions
+strictes ou non-strictes. Trois résultats sont possibles :
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+\textbf{Constante (enum)} & \textbf{Signification} \\
+\midrule
+\code{INHERITED}   & la relation est dérivée (positivement) \\
+\code{BLOCKED}     & un arc négatif (\code{ES}/\code{EN}) bloque l'héritage \\
+\code{NOT\_FOUND}  & ni affirmation ni négation trouvées dans la hiérarchie \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent L'algorithme \code{inherits(n, r, t)} effectue un BFS depuis le nœud
+$n$ : à chaque niveau, si un arc $\xrightarrow{r} t$ est trouvé, son signe
+(positif/négatif) décide immédiatement (principe de proximité — la spécialisation
+la plus proche prime). À défaut, on remonte la hiérarchie \code{is-a}.
+
+\begin{lstlisting}[caption={Moteur d'héritage avec exceptions (extrait)}]
+public enum Inheritance { INHERITED, BLOCKED, NOT_FOUND }
+
+public InheritanceTrace inherits(String nodeId, String relation, String targetId) {
+    Set<String> visited = new LinkedHashSet<>();
+    Queue<String> q = new LinkedList<>();
+    q.add(nodeId);
+    visited.add(nodeId);
+    while (!q.isEmpty()) {
+        String cur = q.poll();
+        // 1. Decision au niveau courant : arc direct (positif ou negatif)
+        for (Arc a : arcs) {
+            if (a.from.equals(cur) && a.to.equals(targetId)
+                    && a.relation.equals(relation)) {
+                Inheritance r = a.negated ? Inheritance.BLOCKED
+                                          : Inheritance.INHERITED;
+                return new InheritanceTrace(r, cur, /* chemin */);
+            }
+        }
+        // 2. Sinon, remonter is-a
+        for (Arc a : arcs) {
+            if (a.from.equals(cur) && a.relation.equals("is-a")
+                    && !visited.contains(a.to)) {
+                visited.add(a.to);
+                q.add(a.to);
+            }
+        }
+    }
+    return new InheritanceTrace(Inheritance.NOT_FOUND, null, ...);
+}
+\end{lstlisting}
+
+\section{Application — Industrie musicale}
+
+\subsection{Réseau}
+
+Le réseau comporte 11 concepts (Personne, MondeMusical, Album, AlbumPlatine,
+Titre, Droits, Croyances, Négations…) et 8 individus
+(Soolking, Universal, Fan, Machi Bessah, ArtisteSigné, ArtisteIndép, Label,
+ainsi que les nœuds-instances modaux $C_1$, $N_1$).
 
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
-  node distance=1.5cm and 2.5cm,
-  concept/.append style={minimum width=3cm}
+  node distance=1.0cm and 1.6cm,
+  concept/.append style={minimum width=2.5cm}
 ]
-  % Concepts
   \node[concept] (Personne)  {Personne};
-  \node[concept] (Artiste)   [below=of Personne]  {Artiste};
-  \node[concept] (Rappeur)   [below left=of Artiste]  {Rappeur};
-  \node[concept] (Chanteur)  [below right=of Artiste] {Chanteur};
+  \node[concept] (MM) [left=1cm of Personne] {MondeMusical};
+  \node[concept] (Org)[right=1cm of Personne] {Organisation};
 
-  % Individus
-  \node[concept, fill=yellow!20] (soolking) [below=of Rappeur] {soolking};
-  \node[concept, fill=yellow!20] (universal) [right=3.5cm of Artiste] {universal};
-  \node[concept, fill=green!10]  (Label) [above=of universal] {Label};
-  \node[concept, fill=green!10]  (Major) [above right=of Label] {MajorLabel};
+  \node[concept, fill=yellow!20] (Artiste) [below=of Personne] {Artiste};
+  \node[concept, fill=yellow!20] (ArtSigne)[below left=of Artiste] {ArtisteSigné};
+  \node[concept, fill=yellow!20] (ArtIndep)[below right=of Artiste] {ArtisteIndép};
+  \node[concept, fill=yellow!20] (Label)   [right=2cm of ArtIndep] {Label};
 
-  % is-a arcs
-  \draw[arrow, dashed] (Artiste) -- node[left, font=\footnotesize]{\code{is-a}} (Personne);
-  \draw[arrow, dashed] (Rappeur) -- node[left, font=\footnotesize]{\code{is-a}} (Artiste);
-  \draw[arrow, dashed] (Chanteur) -- node[right, font=\footnotesize]{\code{is-a}} (Artiste);
-  \draw[arrow, dashed] (soolking) -- node[left, font=\footnotesize]{\code{inst.}} (Rappeur);
-  \draw[arrow, dashed] (Major) -- node[right, font=\footnotesize]{\code{is-a}} (Label);
-  \draw[arrow, dashed] (universal) -- node[right, font=\footnotesize]{\code{inst.}} (Major);
+  \node[concept, fill=green!10]  (soolking) [below=of ArtSigne] {soolking};
 
-  % propriete
-  \draw[arrow, color=red!70] (soolking) -- node[below, font=\footnotesize]
-    {\code{signe\_chez}} (universal);
+  % Arcs is-a (verts pleins)
+  \draw[arrow] (Artiste) -- (Personne);
+  \draw[arrow] (Artiste) -- (MM);
+  \draw[arrow] (ArtSigne) -- (Artiste);
+  \draw[arrow, dashed] (ArtIndep) -- (Artiste); % is-a non-strict
+  \draw[arrow] (Label) -- (Org);
+  \draw[arrow] (soolking) -- (ArtSigne);
+
+  % Relation : sous-contrat
+  \draw[arrow, color=orange!80!black]
+    (ArtSigne) -- node[above, font=\footnotesize, sloped]
+    {\code{sous-contrat}} (Label);
+
+  % Exception barrée ¬sous-contrat
+  \draw[arrow, color=red!70, ultra thick]
+    (ArtIndep) -- node[font=\scriptsize, sloped, above]
+    {$\lnot$\code{sous-contrat}} (Label);
 \end{tikzpicture}
-\caption{Réseau sémantique — domaine musical (schéma)}
+\caption{Réseau musical — extrait illustrant l'exception stricte
+\texttt{ArtisteIndép $\xrightarrow{\lnot\text{sous-contrat}}$ Label}}
 \label{fig:reseau-music}
 \end{figure}
 
-\section{Application — Industrie musicale}
+\subsection{Requêtes}
 
-\textit{[À compléter par le binôme : graphe des concepts musicaux,
-requêtes d'héritage, propriétés héritées par les artistes,
-démonstration des exceptions]}
+\begin{table}[H]
+\centering
+\caption{Requêtes du domaine musical et leur résolution par le moteur}
+\begin{tabularx}{\linewidth}{clcX}
+\toprule
+\textbf{\#} & \textbf{Requête} & \textbf{Résultat} & \textbf{Justification} \\
+\midrule
+Q1 & \emph{Quel artiste possède un album platine ?}
+   & \textcolor{codegreen}{Soolking}
+   & \code{possede(soolking, AlbumPlatine)} \\
+Q2 & \emph{Qui est sous-contrat avec un label ?}
+   & \textcolor{codegreen}{Soolking (via ArtisteSigné)}
+   & héritage strict via \code{is-a} \\
+Q2b& \emph{ArtisteIndép sous-contrat ?}
+   & \textcolor{red}{\textbf{BLOQUÉ}}
+   & exception stricte \code{$\lnot$sous-contrat} prime sur l'héritage \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \section{Application — Système judiciaire}
 
-\textit{[À compléter par le binôme : graphe des acteurs judiciaires,
-hiérarchie des infractions, héritage des peines,
-conflits d'héritage pour les cas complexes]}
+\subsection{Réseau}
 
-\section{Implémentation avec TweetyProject}
+Le réseau judiciaire comporte 9 concepts (Personne, ActeurJudiciaire,
+PartieProces, Culpabilité, Innocence présumée, Preuve, Condamnation, Croyances,
+Négations) et 10 individus (Juge, Avocat, AvocatDéfense, Procureur, Témoin,
+Accusé, Récidiviste, $C_1$, $C_2$, $N_1$).
 
-\textit{[À compléter par le binôme avec les extraits de code]}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=1.0cm and 1.8cm,
+  concept/.append style={minimum width=2.5cm}
+]
+  \node[concept] (Personne) {Personne};
+  \node[concept] (AJ)       [below left=of Personne]  {ActeurJudiciaire};
+  \node[concept] (Partie)   [below right=of Personne] {PartieProcès};
 
-\begin{lstlisting}[caption={Structure d'un réseau sémantique avec Tweety (exemple)}]
-// A completer par le binome
-// Exemple de structure attendue :
-//
-// SimpleGraph<SemanticNetworkNode> graph = new SimpleGraph<>();
-// SemanticNetworkNode artiste = new SemanticNetworkNode("Artiste");
-// SemanticNetworkNode rappeur = new SemanticNetworkNode("Rappeur");
-// graph.add(artiste); graph.add(rappeur);
-// graph.add(new DirectedEdge<>(rappeur, artiste, "is-a"));
+  \node[concept, fill=yellow!20] (Accuse)  [below=of Partie] {Accusé};
+  \node[concept, fill=yellow!20] (Recid)   [below=of Accuse] {Récidiviste};
+  \node[concept, fill=green!10] (Innocence) [right=2.5cm of Accuse] {Innocence présumée};
+
+  % is-a
+  \draw[arrow] (AJ) -- (Personne);
+  \draw[arrow] (Partie) -- (Personne);
+  \draw[arrow] (Accuse) -- (Partie);
+  \draw[arrow] (Recid) -- (Accuse);
+
+  % Relation : presume
+  \draw[arrow, color=orange!80!black]
+    (Accuse) -- node[above, font=\footnotesize, sloped]
+    {\code{presume}} (Innocence);
+
+  % Exception barrée ¬presume
+  \draw[arrow, color=red!70, ultra thick]
+    (Recid) -- node[font=\scriptsize, sloped, above]
+    {$\lnot$\code{presume}} (Innocence);
+\end{tikzpicture}
+\caption{Réseau judiciaire — exception stricte
+\texttt{Récidiviste $\xrightarrow{\lnot\text{presume}}$ Innocence présumée}}
+\label{fig:reseau-justice}
+\end{figure}
+
+\subsection{Requêtes}
+
+\begin{table}[H]
+\centering
+\caption{Requêtes du domaine judiciaire — démonstration des exceptions}
+\begin{tabularx}{\linewidth}{clcX}
+\toprule
+\textbf{\#} & \textbf{Requête} & \textbf{Résultat} & \textbf{Justification} \\
+\midrule
+Q1 & \emph{Quel acteur judiciaire croit en la culpabilité ?}
+   & \textcolor{codegreen}{Procureur}
+   & via $C_1$ \code{agent} Procureur \\
+Q2 & \emph{Accusé : présumé innocent ?}
+   & \textcolor{codegreen}{VRAI}
+   & arc direct \code{presume} \\
+Q3 & \emph{Récidiviste : présumé innocent ?}
+   & \textcolor{red}{\textbf{BLOQUÉ}}
+   & exception \code{$\lnot$presume} sur Récidiviste prime sur héritage via Accusé \\
+Q4 & \emph{AvocatDéfense croit la culpabilité ?}
+   & \textcolor{red}{NON}
+   & $N_1 \xrightarrow{\text{argument}} C_2$ nie la modalité $C_2$ entière \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Interface graphique}
+
+L'interface graphique du module \emph{Réseaux Sémantiques} est, avec celle de
+la \emph{Logique Modale}, la plus visuelle du projet. Elle se compose de deux
+onglets (Industrie Musicale / Système Judiciaire) et propose les fonctionnalités
+suivantes :
+
+\begin{description}
+  \item[Layout hiérarchique auto-calculé] Les positions des nœuds ne sont pas
+        codées en dur. Un algorithme détermine d'abord les
+        \emph{composantes connexes} sous \code{is-a}, fusionne les singletons
+        avec leur voisin le plus riche par relation, puis attribue à chaque
+        nœud un \emph{niveau} (BFS depuis les racines). La distribution
+        horizontale est uniforme par niveau, avec un \emph{zigzag} vertical
+        appliqué aux niveaux trop denses.
+
+  \item[Arcs en courbes de Bézier] Les arcs sont tracés en
+        \code{quadraticCurveTo} avec un point de contrôle perpendiculaire au
+        segment milieu. Cette légère courbure élimine l'effet ``spaghetti''
+        des lignes droites qui se croisent. Quand plusieurs arcs relient la
+        même paire de nœuds, l'amplitude de la courbe est alternée pour éviter
+        leur superposition.
+
+  \item[Hover interactif] Le survol d'un nœud illumine ses arcs sortants
+        (\code{Color.brighter()}, trait épaissi), ce qui aide à démêler
+        visuellement un graphe dense.
+
+  \item[Coloration des résultats de requête] Lorsque l'utilisateur lance une
+        requête « avec relation cible », les nœuds \code{INHERITED} apparaissent
+        en vert avec un badge \texttt{INH}, et les nœuds \code{BLOCKED}
+        apparaissent en rouge avec un badge $\lnot$. La démonstration de
+        l'exception devient ainsi immédiatement lisible.
+
+  \item[Propagation classique \emph{M\textsubscript{1}}/\emph{M\textsubscript{2}}]
+        Un second panneau reproduit l'algorithme de Fahlman et colore
+        l'intersection $M_1 \cap M_2$ en jaune, à des fins pédagogiques.
+\end{description}
+
+\begin{tcolorbox}[resultbox, title={Démo de l'exception en direct}]
+Dans l'onglet \emph{Système Judiciaire}, sélectionner :
+\begin{itemize}
+  \item Catégorie source : \texttt{Accusé}
+  \item Relation cible : \texttt{presume}
+  \item Catégorie cible : \texttt{Innocence}
+\end{itemize}
+puis cliquer sur « \textbf{Évaluer la requête} » :
+\begin{itemize}
+  \item \texttt{Accusé} apparaît en vert (badge \texttt{INH}) — l'arc direct
+        \code{presume} s'applique ;
+  \item \texttt{Récidiviste} apparaît en rouge (badge $\lnot$) — l'exception
+        stricte le bloque, malgré son héritage via \code{is-a Accuse}.
+\end{itemize}
+\end{tcolorbox}
+
+\section{Implémentation}
+
+L'implémentation est en \textbf{Java pur} (sans dépendance externe), reposant
+sur trois classes internes au sein de \file{SemanticNetworkExample.java} :
+\code{Node}, \code{Arc} et \code{SemanticNetwork}.
+Le moteur d'héritage et la GUI exploitent cette structure unique.
+
+\begin{lstlisting}[caption={Structures de base du réseau sémantique}]
+public static class Node {
+    public String id, label, type; // "C"=Concept(rect)  "I"=Individu(ovale)
+}
+
+public static class Arc {
+    public String from, to, relation;
+    public String style;       // "S", "NS", "ES", "EN"
+    public boolean negated;    // true = lien barre
+}
+
+public static class SemanticNetwork {
+    public Map<String, Node> nodes = new LinkedHashMap<>();
+    public List<Arc>        arcs  = new ArrayList<>();
+
+    public void addConcept(String id, String label)    { ... }
+    public void addIndividual(String id, String label) { ... }
+    public void addIsA(String f, String t)             { ... } // style S
+    public void addIsAns(String f, String t)           { ... } // style NS
+    public void addExcS(String f, String t, String r)  { ... } // exception stricte
+    public void addRel(String f, String t, String r)   { ... } // relation ordinaire
+
+    // Moteur d'inference :
+    public InheritanceTrace inherits(String n, String r, String t);
+    public List<Object[]>   queryRelationWithBlocked(String src, String r, String tgt);
+}
 \end{lstlisting}

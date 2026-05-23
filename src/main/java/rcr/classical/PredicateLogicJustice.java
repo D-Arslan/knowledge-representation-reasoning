@@ -20,9 +20,32 @@ import java.util.*;
  */
 public class PredicateLogicJustice {
 
-    private static final String[] INDIVIDUS = {"ali", "omar", "karim"};
+    public static final String[] INDIVIDUS = {"ali", "omar", "karim"};
 
-    private static Set<String> deriver(Set<String> faits) {
+    /** Construit l'ensemble des faits de base (avant chaînage). */
+    public static Set<String> buildFacts() {
+        return new HashSet<>(Arrays.asList(
+            "EstAccuse(ali)",  "EstAccuse(omar)",  "EstAccuse(karim)",
+            "ATemoignage(ali)",
+            "EstRecidiviste(omar)",
+            "EstMineur(karim)", "CrimeGrave(karim)"
+        ));
+    }
+
+    /** Exécute le chaînage avant complet et retourne tous les dérivés. */
+    public static Set<String> deriverTout() {
+        return deriver(buildFacts());
+    }
+
+    /** Liste des prédicats utilisés (pour les ComboBox de la GUI). */
+    public static final String[] PREDICATS = {
+        "EstAccuse", "ATemoignage", "EstRecidiviste", "EstMineur", "CrimeGrave",
+        "DroitAuProces", "DroitDefense", "CandidatAcquittement",
+        "PeineLourde", "SuiviRenforce",
+        "TribunalEnfants", "SupJuridiction", "NecessiteAvocatPublic"
+    };
+
+    public static Set<String> deriver(Set<String> faits) {
         Set<String> derives = new HashSet<>(faits);
         boolean changed = true;
         while (changed) {

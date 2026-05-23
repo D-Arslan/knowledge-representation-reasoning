@@ -7,6 +7,7 @@ import rcr.ui.classical.ClassicalLogicController;
 import rcr.ui.defaut.DefaultLogicController;
 import rcr.ui.description.DescriptionLogicController;
 import rcr.ui.modal.ModalLogicController;
+import rcr.ui.semantic.SemanticNetworkController;
 
 public class DashboardController {
 
@@ -39,6 +40,14 @@ public class DashboardController {
         Stage stage = new Stage();
         stage.setTitle("Logique de Description — OWL API 4.5 · HermiT");
         stage.setScene(new Scene(new DescriptionLogicController().buildUI(), 980, 740));
+        stage.show();
+    }
+
+    @FXML
+    public void openSemantic() {
+        Stage stage = new Stage();
+        stage.setTitle("Réseaux Sémantiques — Propagation de Marqueurs");
+        stage.setScene(new Scene(new SemanticNetworkController().buildUI(), 1150, 720));
         stage.show();
     }
 }

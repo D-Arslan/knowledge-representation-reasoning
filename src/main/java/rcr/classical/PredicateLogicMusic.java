@@ -19,9 +19,35 @@ import java.util.*;
  */
 public class PredicateLogicMusic {
 
-    private static final String[] INDIVIDUS = {"soolking", "feu", "tif", "flenn"};
+    public static final String[] INDIVIDUS = {"soolking", "feu", "tif", "flenn"};
 
-    private static Set<String> deriver(Set<String> faits) {
+    /** Construit l'ensemble des faits de base (avant chaînage). */
+    public static Set<String> buildFacts() {
+        return new HashSet<>(Arrays.asList(
+            "EstRappeurAlgerien(soolking)", "EstRappeurAlgerien(feu)",
+            "EstRappeurAlgerien(tif)",      "EstRappeurAlgerien(flenn)",
+            "SigneLabel(soolking)",          "SigneLabel(feu)",
+            "AlbumSorti(soolking)",          "AlbumSorti(feu)",
+            "AlbumSorti(tif)",               "AlbumSorti(flenn)",
+            "IndependantLongtemps(feu)",
+            "PlusDeDeuxAns(tif)",            "PlusDeDeuxAns(flenn)"
+        ));
+    }
+
+    /** Exécute le chaînage avant complet sur les faits de base et retourne tous les dérivés. */
+    public static Set<String> deriverTout() {
+        return deriver(buildFacts());
+    }
+
+    /** Liste des prédicats utilisés (pour les ComboBox de la GUI). */
+    public static final String[] PREDICATS = {
+        "EstRappeurAlgerien", "EstRappeur", "EstArtiste", "EstMusicien",
+        "SigneLabel", "AlbumSorti", "RecitRoyalties", "PartageRoyalties",
+        "IndependantLongtemps", "ExperienceSolo",
+        "PlusDeDeuxAns", "AlbumCertifie"
+    };
+
+    public static Set<String> deriver(Set<String> faits) {
         Set<String> derives = new HashSet<>(faits);
         boolean changed = true;
         while (changed) {

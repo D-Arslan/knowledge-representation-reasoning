@@ -30,6 +30,17 @@
     -fx-background-color: #1e1e2e;
 }
 
+/* ScrollPane wrapping the card grid — transparent so the dark theme stays clean */
+.card-grid-scroll,
+.card-grid-scroll > .viewport {
+    -fx-background-color: #1e1e2e;
+    -fx-background-insets: 0;
+}
+
+.card-grid-scroll {
+    -fx-padding: 0;
+}
+
 /* Base card */
 .card {
     -fx-background-radius: 14;
@@ -187,6 +198,32 @@
 
 .btn-description:hover {
     -fx-background-color: #c3f0be;
+}
+
+/* Card — Réseaux Sémantiques (peach) */
+.card-semantic {
+    -fx-background-color: #1e1e2e;
+    -fx-border-color: #fab387;
+    -fx-effect: dropshadow(gaussian, #fab38755, 12, 0, 0, 0);
+}
+
+.card-semantic:hover {
+    -fx-background-color: #2d2218;
+    -fx-effect: dropshadow(gaussian, #fab387bb, 22, 0, 0, 0);
+}
+
+.card-icon-semantic {
+    -fx-font-size: 34px;
+    -fx-text-fill: #fab387;
+}
+
+.btn-semantic {
+    -fx-background-color: #fab387;
+    -fx-text-fill: #1e1e2e;
+}
+
+.btn-semantic:hover {
+    -fx-background-color: #ffd0a8;
 }
 
 /* ---- Footer ---- */

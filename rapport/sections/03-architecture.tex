@@ -32,13 +32,14 @@ projet_RCR/
     |   |   |-- DescriptionLogicMusic.java  # OWL + HermiT — musique
     |   |   `-- DescriptionLogicJustice.java
     |   |-- semantic/
-    |   |   `-- SemanticNetworkExample.java
+    |   |   `-- SemanticNetworkExample.java  # Reseau + moteur heritage
     |   `-- ui/
     |       |-- DashboardController.java
     |       |-- modal/ModalLogicController.java
     |       |-- defaut/DefaultLogicController.java
     |       |-- classical/ClassicalLogicController.java
-    |       `-- description/DescriptionLogicController.java
+    |       |-- description/DescriptionLogicController.java
+    |       `-- semantic/SemanticNetworkController.java
     `-- resources/rcr/
         |-- dashboard.fxml
         `-- css/style.css
@@ -76,74 +77,96 @@ Git / GitHub           & ---       & Versionnement du code source \\
 L'interface graphique est réalisée en \textbf{JavaFX~17} avec une architecture
 \textsc{mvc} (FXML + contrôleurs Java).
 Elle adopte le thème sombre \emph{Catppuccin Mocha} et se compose d'un
-\textbf{tableau de bord} (Figure~\ref{fig:dashboard}) présentant quatre cartes,
-chacune ouvrant une fenêtre dédiée à un formalisme.
+\textbf{tableau de bord} (Figure~\ref{fig:dashboard}) présentant
+\textbf{cinq cartes} disposées en grille $2\times 3$, la dernière (Réseaux
+Sémantiques) centrée sur les deux colonnes. L'ensemble est enveloppé dans un
+\code{ScrollPane} pour s'adapter aux écrans de petite hauteur. Chaque carte
+ouvre une fenêtre dédiée à un formalisme.
 
 % --- Figure dashboard ---
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[font=\small]
   % fond du dashboard
-  \fill[gray!15, rounded corners=8pt] (0,0) rectangle (12,7.5);
+  \fill[gray!15, rounded corners=8pt] (0,0) rectangle (12,10.5);
 
   % header
-  \fill[gray!30, rounded corners=4pt] (0.2,6.8) rectangle (11.8,7.3);
-  \node at (6,7.05) {\textbf{RCR1 — Logiques Formelles}};
+  \fill[gray!30, rounded corners=4pt] (0.2,9.8) rectangle (11.8,10.3);
+  \node at (6,10.05) {\textbf{RCR1 — Logiques Formelles}};
 
   % Card 1 — Modale (bleu)
-  \fill[blue!10, rounded corners=6pt] (0.4,3.8) rectangle (5.6,6.6);
-  \draw[blue!60, rounded corners=6pt, thick] (0.4,3.8) rectangle (5.6,6.6);
-  \node[font=\large] at (3,6.1) {$\nec\;\pos$};
-  \node[font=\bfseries] at (3,5.5) {Logique Modale};
-  \node[align=center, font=\footnotesize, gray] at (3,5.0)
+  \fill[blue!10, rounded corners=6pt] (0.4,6.8) rectangle (5.6,9.5);
+  \draw[blue!60, rounded corners=6pt, thick] (0.4,6.8) rectangle (5.6,9.5);
+  \node[font=\large] at (3,9.0) {$\nec\;\pos$};
+  \node[font=\bfseries] at (3,8.4) {Logique Modale};
+  \node[align=center, font=\footnotesize, gray] at (3,7.9)
     {Modèles de Kripke};
-  \fill[blue!70, rounded corners=3pt] (1.8,4.1) rectangle (4.2,4.6);
-  \node[white, font=\footnotesize\bfseries] at (3,4.35) {Lancer →};
+  \fill[blue!70, rounded corners=3pt] (1.8,7.1) rectangle (4.2,7.6);
+  \node[white, font=\footnotesize\bfseries] at (3,7.35) {Lancer →};
 
   % Card 2 — Défauts (violet)
-  \fill[violet!10, rounded corners=6pt] (6.4,3.8) rectangle (11.6,6.6);
-  \draw[violet!60, rounded corners=6pt, thick] (6.4,3.8) rectangle (11.6,6.6);
-  \node[font=\large] at (9,6.1) {$\dashv$};
-  \node[font=\bfseries] at (9,5.5) {Logique des Défauts};
-  \node[align=center, font=\footnotesize, gray] at (9,5.0)
+  \fill[violet!10, rounded corners=6pt] (6.4,6.8) rectangle (11.6,9.5);
+  \draw[violet!60, rounded corners=6pt, thick] (6.4,6.8) rectangle (11.6,9.5);
+  \node[font=\large] at (9,9.0) {$\dashv$};
+  \node[font=\bfseries] at (9,8.4) {Logique des Défauts};
+  \node[align=center, font=\footnotesize, gray] at (9,7.9)
     {Extensions de Reiter};
-  \fill[violet!70, rounded corners=3pt] (7.8,4.1) rectangle (10.2,4.6);
-  \node[white, font=\footnotesize\bfseries] at (9,4.35) {Lancer →};
+  \fill[violet!70, rounded corners=3pt] (7.8,7.1) rectangle (10.2,7.6);
+  \node[white, font=\footnotesize\bfseries] at (9,7.35) {Lancer →};
 
   % Card 3 — Classique (rouge)
-  \fill[red!8, rounded corners=6pt] (0.4,0.3) rectangle (5.6,3.5);
-  \draw[red!50, rounded corners=6pt, thick] (0.4,0.3) rectangle (5.6,3.5);
-  \node[font=\large] at (3,3.0) {$\forall\exists$};
-  \node[font=\bfseries] at (3,2.4) {Logique Classique};
-  \node[align=center, font=\footnotesize, gray] at (3,1.9)
+  \fill[red!8, rounded corners=6pt] (0.4,3.6) rectangle (5.6,6.3);
+  \draw[red!50, rounded corners=6pt, thick] (0.4,3.6) rectangle (5.6,6.3);
+  \node[font=\large] at (3,5.8) {$\forall\exists$};
+  \node[font=\bfseries] at (3,5.2) {Logique Classique};
+  \node[align=center, font=\footnotesize, gray] at (3,4.7)
     {CNF · Prédicats · SAT4J};
-  \fill[red!60, rounded corners=3pt] (1.8,0.6) rectangle (4.2,1.1);
-  \node[white, font=\footnotesize\bfseries] at (3,0.85) {Lancer →};
+  \fill[red!60, rounded corners=3pt] (1.8,3.9) rectangle (4.2,4.4);
+  \node[white, font=\footnotesize\bfseries] at (3,4.15) {Lancer →};
 
   % Card 4 — Description (vert)
-  \fill[green!8, rounded corners=6pt] (6.4,0.3) rectangle (11.6,3.5);
-  \draw[green!50!black, rounded corners=6pt, thick] (6.4,0.3) rectangle (11.6,3.5);
-  \node[font=\large] at (9,3.0) {$\sqsubseteq\;\exists$};
-  \node[font=\bfseries] at (9,2.4) {Logique de Description};
-  \node[align=center, font=\footnotesize, gray] at (9,1.9)
+  \fill[green!8, rounded corners=6pt] (6.4,3.6) rectangle (11.6,6.3);
+  \draw[green!50!black, rounded corners=6pt, thick] (6.4,3.6) rectangle (11.6,6.3);
+  \node[font=\large] at (9,5.8) {$\sqsubseteq\;\exists$};
+  \node[font=\bfseries] at (9,5.2) {Logique de Description};
+  \node[align=center, font=\footnotesize, gray] at (9,4.7)
     {OWL API · HermiT};
-  \fill[green!60!black, rounded corners=3pt] (7.8,0.6) rectangle (10.2,1.1);
-  \node[white, font=\footnotesize\bfseries] at (9,0.85) {Lancer →};
+  \fill[green!60!black, rounded corners=3pt] (7.8,3.9) rectangle (10.2,4.4);
+  \node[white, font=\footnotesize\bfseries] at (9,4.15) {Lancer →};
+
+  % Card 5 — Reseaux Semantiques (orange/peach, centree columnSpan=2)
+  \fill[orange!10, rounded corners=6pt] (3.4,0.4) rectangle (8.6,3.1);
+  \draw[orange!70, rounded corners=6pt, thick] (3.4,0.4) rectangle (8.6,3.1);
+  \node[font=\large] at (6,2.6) {$\circledcirc$};
+  \node[font=\bfseries] at (6,2.0) {Réseaux Sémantiques};
+  \node[align=center, font=\footnotesize, gray] at (6,1.5)
+    {Propagation \& Héritage avec exceptions};
+  \fill[orange!70, rounded corners=3pt] (4.8,0.7) rectangle (7.2,1.2);
+  \node[white, font=\footnotesize\bfseries] at (6,0.95) {Lancer →};
 
   % footer
   \fill[gray!30, rounded corners=4pt] (0.2,0.05) rectangle (11.8,0.2);
 \end{tikzpicture}
-\caption{Tableau de bord JavaFX — quatre formalismes disponibles}
+\caption{Tableau de bord JavaFX — cinq formalismes en grille $2\times 3$
+(Réseaux Sémantiques centrée en bas, \texttt{columnSpan=2})}
 \label{fig:dashboard}
 \end{figure}
 
 Chaque fenêtre de formalisme propose :
 \begin{itemize}
-  \item Un affichage de la théorie ou de la TBox/ABox ;
-  \item Un bouton de lancement du raisonneur (exécution en \emph{thread}
-        d'arrière-plan pour ne pas bloquer l'interface) ;
-  \item Une zone de résultats affichant la sortie du raisonneur.
+  \item Un affichage structuré de la théorie, des axiomes ou de la TBox/ABox ;
+  \item Un ou plusieurs panneaux de \textbf{requêtes interactives} (sélecteurs,
+        boutons de test, historique coloré $\checkmark$ / $\times$) permettant
+        d'interroger le raisonneur en direct, sans relancer tout le mode console ;
+  \item Un bouton de lancement de l'\textbf{exécution complète} (mode console
+        encapsulé) dans un \emph{thread} d'arrière-plan pour ne pas bloquer
+        l'interface.
 \end{itemize}
+
+\noindent Les fenêtres \emph{Logique Modale} et \emph{Réseaux Sémantiques} se
+distinguent par un \textbf{rendu graphique sur \code{Canvas}} (mondes de Kripke
+ou nœuds du réseau, arcs en courbes de Bézier pour les réseaux, hover qui
+illumine les arcs sortants).
 
 \section{Lancement du projet}
 

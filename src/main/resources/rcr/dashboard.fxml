@@ -2,88 +2,103 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.geometry.Insets?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="rcr.ui.DashboardController"
-            prefWidth="900" prefHeight="700"
+            prefWidth="960" prefHeight="800"
             styleClass="root-pane">
 
     <!-- ===== HEADER ===== -->
     <top>
         <VBox styleClass="header" alignment="CENTER">
-            <padding><Insets top="28" bottom="28" left="40" right="40"/></padding>
+            <padding><Insets top="22" bottom="22" left="40" right="40"/></padding>
             <Label text="RCR1 — Logiques Formelles" styleClass="header-title"/>
             <Label text="Master 1 SII · USTHB · Représentation des Connaissances et Raisonnement"
                    styleClass="header-sub"/>
         </VBox>
     </top>
 
-    <!-- ===== CARD GRID ===== -->
+    <!-- ===== CARD GRID (scrollable as fallback) ===== -->
     <center>
-        <GridPane hgap="28" vgap="28" alignment="CENTER" styleClass="card-grid">
-            <padding><Insets top="40" bottom="40" left="60" right="60"/></padding>
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+                    styleClass="card-grid-scroll">
+            <GridPane hgap="22" vgap="22" alignment="CENTER" styleClass="card-grid">
+                <padding><Insets top="25" bottom="25" left="45" right="45"/></padding>
 
-            <!-- Card 1 — Logique Modale -->
-            <VBox GridPane.columnIndex="0" GridPane.rowIndex="0"
-                  prefWidth="310" prefHeight="210"
-                  styleClass="card,card-modal" alignment="CENTER" spacing="14">
-                <Label text="◻  ◇" styleClass="card-icon"/>
-                <Label text="Logique Modale" styleClass="card-title"/>
-                <Label text="Modèles de Kripke · Nécessité · Possibilité"
-                       styleClass="card-desc" wrapText="true"/>
-                <Button text="Lancer  →" onAction="#openModal"
-                        styleClass="card-btn,btn-modal"/>
-            </VBox>
+                <!-- Card 1 — Logique Modale -->
+                <VBox GridPane.columnIndex="0" GridPane.rowIndex="0"
+                      prefWidth="310" prefHeight="175"
+                      styleClass="card,card-modal" alignment="CENTER" spacing="10">
+                    <Label text="◻  ◇" styleClass="card-icon"/>
+                    <Label text="Logique Modale" styleClass="card-title"/>
+                    <Label text="Modèles de Kripke · Nécessité · Possibilité"
+                           styleClass="card-desc" wrapText="true"/>
+                    <Button text="Lancer  →" onAction="#openModal"
+                            styleClass="card-btn,btn-modal"/>
+                </VBox>
 
-            <!-- Card 2 — Logique des Défauts -->
-            <VBox GridPane.columnIndex="1" GridPane.rowIndex="0"
-                  prefWidth="310" prefHeight="210"
-                  styleClass="card,card-defaut" alignment="CENTER" spacing="14">
-                <Label text="⊣" styleClass="card-icon"/>
-                <Label text="Logique des Défauts" styleClass="card-title"/>
-                <Label text="Extensions de Reiter · Non-monotonie"
-                       styleClass="card-desc" wrapText="true"/>
-                <Button text="Lancer  →" onAction="#openDefaut"
-                        styleClass="card-btn,btn-defaut"/>
-            </VBox>
+                <!-- Card 2 — Logique des Défauts -->
+                <VBox GridPane.columnIndex="1" GridPane.rowIndex="0"
+                      prefWidth="310" prefHeight="175"
+                      styleClass="card,card-defaut" alignment="CENTER" spacing="10">
+                    <Label text="⊣" styleClass="card-icon"/>
+                    <Label text="Logique des Défauts" styleClass="card-title"/>
+                    <Label text="Extensions de Reiter · Non-monotonie"
+                           styleClass="card-desc" wrapText="true"/>
+                    <Button text="Lancer  →" onAction="#openDefaut"
+                            styleClass="card-btn,btn-defaut"/>
+                </VBox>
 
-            <!-- Card 3 — Logique Classique -->
-            <VBox GridPane.columnIndex="0" GridPane.rowIndex="1"
-                  prefWidth="310" prefHeight="210"
-                  styleClass="card,card-classique" alignment="CENTER" spacing="14">
-                <Label text="∀∃" styleClass="card-icon-classique"/>
-                <Label text="Logique Classique" styleClass="card-title"/>
-                <Label text="Propositionnelle CNF · Prédicats · SAT4J"
-                       styleClass="card-desc" wrapText="true"/>
-                <Button text="Lancer  →" onAction="#openClassical"
-                        styleClass="card-btn,btn-classique"/>
-            </VBox>
+                <!-- Card 3 — Logique Classique -->
+                <VBox GridPane.columnIndex="0" GridPane.rowIndex="1"
+                      prefWidth="310" prefHeight="175"
+                      styleClass="card,card-classique" alignment="CENTER" spacing="10">
+                    <Label text="∀∃" styleClass="card-icon-classique"/>
+                    <Label text="Logique Classique" styleClass="card-title"/>
+                    <Label text="Propositionnelle CNF · Prédicats · SAT4J"
+                           styleClass="card-desc" wrapText="true"/>
+                    <Button text="Lancer  →" onAction="#openClassical"
+                            styleClass="card-btn,btn-classique"/>
+                </VBox>
 
-            <!-- Card 4 — Logique de Description -->
-            <VBox GridPane.columnIndex="1" GridPane.rowIndex="1"
-                  prefWidth="310" prefHeight="210"
-                  styleClass="card,card-description" alignment="CENTER" spacing="14">
-                <Label text="⊑  ∃" styleClass="card-icon-description"/>
-                <Label text="Logique de Description" styleClass="card-title"/>
-                <Label text="OWL API · HermiT · Ontologies"
-                       styleClass="card-desc" wrapText="true"/>
-                <Button text="Lancer  →" onAction="#openDescription"
-                        styleClass="card-btn,btn-description"/>
-            </VBox>
+                <!-- Card 4 — Logique de Description -->
+                <VBox GridPane.columnIndex="1" GridPane.rowIndex="1"
+                      prefWidth="310" prefHeight="175"
+                      styleClass="card,card-description" alignment="CENTER" spacing="10">
+                    <Label text="⊑  ∃" styleClass="card-icon-description"/>
+                    <Label text="Logique de Description" styleClass="card-title"/>
+                    <Label text="OWL API · HermiT · Ontologies"
+                           styleClass="card-desc" wrapText="true"/>
+                    <Button text="Lancer  →" onAction="#openDescription"
+                            styleClass="card-btn,btn-description"/>
+                </VBox>
 
-        </GridPane>
+                <!-- Card 5 — Réseaux Sémantiques (centrée sur 2 colonnes) -->
+                <VBox GridPane.columnIndex="0" GridPane.rowIndex="2"
+                      GridPane.columnSpan="2" GridPane.halignment="CENTER"
+                      prefWidth="310" prefHeight="175"
+                      styleClass="card,card-semantic" alignment="CENTER" spacing="10">
+                    <Label text="◎" styleClass="card-icon-semantic"/>
+                    <Label text="Réseaux Sémantiques" styleClass="card-title"/>
+                    <Label text="Propagation de marqueurs · Héritage · Exceptions"
+                           styleClass="card-desc" wrapText="true"/>
+                    <Button text="Lancer  →" onAction="#openSemantic"
+                            styleClass="card-btn,btn-semantic"/>
+                </VBox>
+
+            </GridPane>
+        </ScrollPane>
     </center>
 
     <!-- ===== FOOTER ===== -->
     <bottom>
         <Label text="TweetyProject 1.27 · JavaFX 17.0.2 · Java 11"
                styleClass="footer" maxWidth="Infinity" alignment="CENTER">
-            <padding><Insets top="10" bottom="12"/></padding>
+            <padding><Insets top="8" bottom="10"/></padding>
         </Label>
     </bottom>
 

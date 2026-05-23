@@ -13,22 +13,36 @@ réels : l'industrie musicale algérienne et le système judiciaire.
 \noindent Les objectifs initiaux ont été atteints :
 
 \begin{enumerate}
-  \item \textbf{Implémentation complète} des quatre formalismes pris en charge
-        par le binôme : logique modale (TweetyProject), logique des défauts
-        (TweetyProject RDL), logique classique (SAT4J + FOL) et logique de
-        description (OWL API 4.5 + HermiT).
+  \item \textbf{Implémentation complète} des cinq formalismes : logique modale
+        (TweetyProject), logique des défauts (TweetyProject RDL), logique
+        classique propositionnelle (SAT4J) et des prédicats (chaînage avant),
+        logique de description (OWL API 4.5 + HermiT) et réseaux sémantiques
+        (structure ad hoc Java avec moteur d'héritage avec exceptions).
 
-  \item \textbf{Démonstration de la non-monotonie} pour la logique des défauts
-        (ajout de faits invalide des conclusions d'extension) et mise en
-        évidence de l'hypothèse du monde ouvert pour la logique de description.
+  \item \textbf{Démonstration de la non-monotonie} doublement présente : par
+        les extensions de Reiter en logique des défauts (ajout d'un fait
+        invalide une conclusion) et par le moteur d'héritage des réseaux
+        sémantiques (les exceptions \code{ES}/\code{EN} bloquent une propriété
+        héritée).
+        Mise en évidence également de l'hypothèse du monde ouvert (\textsc{owa})
+        pour la logique de description.
 
-  \item \textbf{Interface graphique unifiée} permettant d'interagir avec chaque
-        formalisme, d'observer les résultats du raisonneur en temps réel et de
-        comparer les comportements.
+  \item \textbf{Interface graphique unifiée et interactive} : dashboard de cinq
+        cartes, et pour chaque formalisme un panneau d'interrogation en direct
+        (test de satisfiabilité / entailment pour la propositionnelle, tests
+        atomiques / universels / existentiels pour les prédicats, requêtes
+        Instance / Subsomption / Disjonction pour la logique de description,
+        propagation de marqueurs et requête avec exceptions pour les réseaux
+        sémantiques) avec historique coloré.
 
   \item \textbf{Cohérence inter-formalismes} : les mêmes individus (Soolking,
         Ali, Karim…) sont représentés dans chaque formalisme, permettant une
         comparaison directe de leur expressivité sur des cas concrets.
+        L'exemple le plus parlant est le statut juridique de \emph{Récidiviste}~:
+        traité comme une exception stricte $\lnot$\code{presume} en réseaux
+        sémantiques, comme un défaut $d_6$ qui contredit $d_1$ en logique des
+        défauts, et comme la classe \code{AccuseRecidiviste} qui force
+        \code{CasComplexe} en logique de description.
 \end{enumerate}
 
 \section{Difficultés rencontrées}

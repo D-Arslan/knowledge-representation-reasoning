@@ -24,7 +24,7 @@ public class MainApp extends Application {
     public void start(Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader(
                 getClass().getResource("/rcr/dashboard.fxml"));
-        Scene scene = new Scene(loader.load(), 900, 650);
+        Scene scene = new Scene(loader.load(), 960, 800);
         scene.getStylesheets().add(
                 getClass().getResource("/rcr/css/style.css").toExternalForm());
         stage.setTitle("RCR1 — Logiques Formelles");

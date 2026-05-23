@@ -165,3 +165,66 @@ NaivePrologReasoner reasoner = new NaivePrologReasoner();
 Collection<FolFormula> derived = reasoner.query(kb,
     parser.parseFormula("Royalties(soolking)"));
 \end{lstlisting}
+
+\section{Interface graphique interactive}
+
+La fenêtre \emph{Logique Classique} se compose de quatre onglets (Propositionnel
+Musique / Justice, Prédicats Musique / Justice). Chaque onglet adopte une
+disposition en deux colonnes : à gauche l'affichage structuré de la KB ou des
+faits, à droite un panneau d'\textbf{interrogation interactive}.
+
+\subsection{Onglets propositionnels — SAT4J en direct}
+
+Le panneau de gauche présente séparément les \emph{faits} (atomes positifs en
+vert) et les \emph{clauses CNF} numérotées. Le panneau de droite expose trois
+modes de requête, chacun déclenchant un appel direct au \code{SatReasoner}~:
+
+\begin{description}
+  \item[Satisfiabilité] le bouton « \textbf{KB satisfiable ?} » teste
+        \code{!\reasoner.query(kb, FRESH)} où \code{FRESH} est un atome inutilisé
+        (équivalent à un témoin d'insatisfiabilité).
+  \item[Entailment $KB \models \varphi$] sélecteur d'atome + case
+        « tester la négation » + bouton qui appelle \code{reasoner.query(kb, phi)}.
+  \item[Ajout temporaire d'une formule] sélecteur d'atome + case « négation »
+        + bouton « \texttt{KB + \{$\varphi$\}} satisfiable ? ». Permet d'observer
+        la \textbf{monotonie} (un ajout cohérent ne supprime rien) et de
+        \textbf{provoquer une contradiction} sur demande.
+\end{description}
+
+\noindent Chaque résultat s'empile dans un \textbf{historique coloré}
+($\checkmark$ vert pour VRAI, $\times$ rouge pour FAUX) qui permet de comparer
+plusieurs requêtes d'un coup d'œil. Pour exposer la KB à la GUI sans
+perturber le mode console, les classes \code{PropositionalLogicMusic} et
+\code{PropositionalLogicJustice} exposent désormais les méthodes statiques
+publiques \code{buildKB()}, \code{entails(kb, phi)} et
+\code{isSatisfiable(kb)}.
+
+\subsection{Onglets prédicats — chaînage avant explicite}
+
+Pour les prédicats, le forward chaining est exécuté \emph{une seule fois} au
+chargement de l'onglet (méthode \code{deriverTout()}). Le panneau de gauche
+affiche tous les faits dérivés \textbf{groupés par prédicat}, avec un marqueur
+visuel distinguant les faits initiaux (\code{·}) des faits dérivés
+($\Rightarrow$). Le panneau de droite propose trois requêtes :
+
+\begin{description}
+  \item[Atomique $P(a)$] sélecteur prédicat × individu + bouton « Tester ».
+  \item[Universelle $\forall x\,P(x)$] vérifie que $P(x)$ est dérivé pour
+        chaque individu et affiche les \emph{contre-exemples} si la propriété
+        ne tient pas.
+  \item[Existentielle $\exists x\,P(x)$] cherche un \emph{témoin} parmi les
+        individus et l'affiche le cas échéant.
+\end{description}
+
+\begin{tcolorbox}[notebox, title={Exemple de session}]
+Sur l'onglet \emph{Prédicats Musique} :
+\begin{itemize}
+  \item Test atomique \code{Royalties(soolking)} $\to$ \textbf{VRAI} (dérivé via
+        SigneLabel + ax5) ;
+  \item Test universel $\forall x\,\text{EstMusicien}(x)$ $\to$ \textbf{VRAI},
+        chaîne \code{EstRappeurAlgerien} $\to$ \code{EstRappeur} $\to$
+        \code{EstArtiste} $\to$ \code{EstMusicien} appliquée à tous ;
+  \item Test existentiel $\exists x\,\text{ExperienceSolo}(x)$ $\to$
+        \textbf{VRAI}, témoin : \emph{feu}.
+\end{itemize}
+\end{tcolorbox}

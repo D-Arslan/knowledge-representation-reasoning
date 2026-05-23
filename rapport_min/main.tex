@@ -1,0 +1,627 @@
+% ============================================================
+%  Rapport minimaliste — TP RCR1
+%  Master 1 SII · USTHB · 2025-2026
+%
+%  Version condensée : pour chaque TP, on décrit le domaine
+%  choisi, la représentation des connaissances, puis l'exploitation.
+% ============================================================
+\documentclass[11pt, a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{lmodern}
+\usepackage[top=2.2cm, bottom=2.2cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage[most]{tcolorbox}
+\usepackage[colorlinks=true, linkcolor=blue!60!black, urlcolor=blue!60!black,
+            citecolor=blue!60!black]{hyperref}
+
+% Couleurs
+\definecolor{usthbblue}{RGB}{0,63,130}
+\definecolor{codebg}{RGB}{248,248,248}
+\definecolor{codegreen}{RGB}{40,140,40}
+\definecolor{codeblue}{RGB}{0,90,180}
+
+% Styles tcolorbox
+\tcbset{
+  defbox/.style={
+    colback=usthbblue!5, colframe=usthbblue!60,
+    fonttitle=\bfseries, boxrule=0.5pt, arc=4pt,
+  },
+}
+
+\lstset{
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\footnotesize,
+  commentstyle=\color{codegreen}\itshape,
+  keywordstyle=\color{codeblue}\bfseries,
+  breaklines=true,
+  frame=single, rulecolor=\color{gray!40},
+  xleftmargin=8pt, xrightmargin=4pt,
+  showstringspaces=false,
+  tabsize=2, language=Java,
+}
+
+\newcommand{\code}[1]{\texttt{#1}}
+
+% Symboles
+\newcommand{\nec}{\Box}
+\newcommand{\pos}{\Diamond}
+\newcommand{\sq}{\sqsubseteq}
+
+% ============================================================
+\begin{document}
+
+% ============================================================
+% PAGE DE GARDE
+% ============================================================
+\begin{titlepage}
+\begin{center}
+
+% En-tête université
+{\large\bfseries République Algérienne Démocratique et Populaire}\\[0.3em]
+{\large Ministère de l'Enseignement Supérieur et de la Recherche Scientifique}\\[1.5em]
+
+\rule{\linewidth}{0.6pt}\\[0.5em]
+{\large\bfseries Université des Sciences et de la Technologie Houari Boumediene}\\
+{\normalsize Faculté d'Informatique · Département SI}\\[0.3em]
+\rule{\linewidth}{0.6pt}
+
+\vspace{2em}
+
+% Discipline
+{\color{usthbblue}\large Master 1 Systèmes d'Information et d'Intelligence Artificielle}\\[0.5em]
+{\normalsize Module : \textbf{RCR1 --- Représentation des Connaissances et Raisonnement}}
+
+\vspace{3em}
+
+% Titre principal
+\begin{tcolorbox}[defbox, width=0.92\linewidth, halign=center]
+  {\LARGE\bfseries Implémentation de Formalismes de}\\[0.4em]
+  {\LARGE\bfseries Représentation des Connaissances}\\[0.4em]
+  {\LARGE\bfseries et Raisonnement}\\[1em]
+  {\large Logique Modale · Logique des Défauts · Logique Classique}\\
+  {\large Logique de Description · Réseaux Sémantiques}
+\end{tcolorbox}
+
+\vspace{3em}
+
+% Domaines d'application
+{\normalsize Domaines d'application :
+  \textbf{Industrie musicale algérienne} et \textbf{Système judiciaire}}
+
+\vspace{3em}
+
+% Auteurs
+\begin{tabular}{rl}
+  \textbf{Réalisé par :} & D. Arslan \\
+                          & [Prénom Nom Binôme 2] \\[1em]
+  \textbf{Encadré par :} & [Nom de l'encadrant] \\[1em]
+  \textbf{Groupe :}      & [Numéro du groupe]
+\end{tabular}
+
+\vfill
+
+% Outils
+{\small\color{gray}
+  TweetyProject 1.27 · OWL API 4.5 · HermiT 1.4.3 · JavaFX 17 · Java 11 · Maven
+}\\[1em]
+
+\rule{\linewidth}{0.4pt}\\[0.4em]
+{\normalsize Année universitaire 2025 -- 2026}
+
+\end{center}
+\end{titlepage}
+
+% ============================================================
+\section{Introduction}
+
+Ce TP exploite plusieurs \emph{toolboxes} de représentation des connaissances
+pour modéliser deux domaines réels et exécuter des requêtes de raisonnement
+sur ces modèles.
+
+\paragraph{Objectif.} Pour chaque formalisme, on doit (i)~choisir un domaine
+réel, (ii)~représenter ses connaissances avec une syntaxe formelle adaptée,
+(iii)~exploiter cette représentation pour répondre à des questions via un
+moteur de raisonnement automatisé.
+
+\paragraph{Périmètre.} Cinq formalismes ont été implémentés alors que le
+minimum demandé en était deux. Chaque formalisme est interrogeable
+interactivement depuis une interface graphique JavaFX unifiée
+(\code{mvn javafx:run}) ou en console (\code{mvn exec:java}). Le code source
+complet, ainsi qu'un rapport détaillé avec schémas TikZ, est disponible
+séparément.
+
+\paragraph{Choix des domaines.} Les deux domaines retenus pour traverser les
+cinq formalismes sont :
+
+\begin{itemize}
+  \item \textbf{Industrie musicale algérienne} --- artistes, labels, albums,
+        certifications, droits. Quatre rappeurs algériens (\emph{Soolking,
+        Feu, Tif, Flenn}) servent d'individus communs à tous les formalismes,
+        ainsi que deux labels (\emph{Universal} et \emph{Believe}) et deux
+        albums (\emph{Guerilla} et \emph{Dernière~Heure}). Ce domaine met en
+        évidence les notions de \emph{contrat}, \emph{indépendance}, et
+        \emph{partage des droits} --- des situations naturellement non-monotones
+        (un artiste indépendant qui signe un contrat).
+
+  \item \textbf{Système judiciaire} --- acteurs (juges, avocats, procureurs,
+        témoins), accusés et infractions. Trois accusés (\emph{Ali, Omar,
+        Karim}) illustrent trois cas représentatifs : Ali (présumé innocent
+        avec témoignage favorable), Omar (récidiviste, donc exception à la
+        présomption d'innocence), et Karim (mineur poursuivi pour crime grave,
+        situation où plusieurs règles s'opposent). Ce domaine est
+        particulièrement adapté à la démonstration des exceptions et des
+        conflits de règles.
+\end{itemize}
+
+\paragraph{Bibliothèques utilisées.} Voir la section
+\emph{Bibliothèques et références} en fin de document pour la liste détaillée
+avec liens.
+
+\newpage
+% ============================================================
+\section{TP~1 --- Logique Modale}
+
+\subsection*{Domaine choisi}
+
+Univers musical à \textbf{quatre mondes} représentant des points de vue
+distincts sur l'industrie de la musique : $w_1 = \emph{label}$
+(maison de disque), $w_2 = \emph{fan}$, $w_3 = \emph{artiste}$, et
+$w_4 = \emph{critique}$ musical. Chaque monde est caractérisé par les
+propositions qui y sont vraies (par exemple : un album est platine, un
+concert est annulé, un artiste est sous contrat).
+
+\noindent La relation d'accessibilité $R$ traduit qui « voit »~quoi :
+\begin{center}
+\small $R = \{(w_1, w_2),\; (w_1, w_3),\; (w_3, w_3),\; (w_2, w_4),\; (w_4, w_4)\}$
+\end{center}
+
+\noindent Le label voit fans et artistes ; l'artiste se réfléchit lui-même
+(boucle réflexive partielle) ; les fans accèdent aux critiques, etc. Ce
+modèle illustre les notions de \emph{nécessité} (« dans tous les mondes
+accessibles ») et de \emph{possibilité} (« dans au moins un »).
+
+\subsection*{Représentation}
+
+Modèle de Kripke $\mathcal{M} = \langle W, R, V\rangle$ implémenté avec
+TweetyProject (\code{MlHerbrandInterpretation} pour les mondes,
+\code{AccessibilityRelation} pour~$R$). Sémantique récursive :
+\[
+\mathcal{M}, w \models \nec\varphi \;\Leftrightarrow\; \forall v\;((w,v)\in R \Rightarrow \mathcal{M}, v \models \varphi)
+\qquad
+\mathcal{M}, w \models \pos\varphi \;\Leftrightarrow\; \exists v\;((w,v)\in R \land \mathcal{M}, v \models \varphi)
+\]
+
+\subsection*{Exploitation}
+
+\begin{center}\small
+\begin{tabular}{cllc}
+\toprule
+\textbf{\#} & \textbf{Formule} & \textbf{Monde} & \textbf{Résultat} \\
+\midrule
+Q1 & $\nec\,\text{album\_est\_platine}$       & $w_1$ & \textbf{FAUX} (faux en $w_2$) \\
+Q2 & $\pos\,\text{concert\_annule}$           & $w_1$ & \textbf{VRAI} (vrai en $w_2$) \\
+Q3 & $\nec\,\text{chanson\_en\_top\_charts}$ & $w_2$ & \textbf{VRAI} (vrai en $w_4$) \\
+Q4 & $\pos\,\text{artiste\_independant}$     & $w_1$ & \textbf{VRAI} (vrai en $w_3$) \\
+Q5 & $\nec(\text{album} \to \text{contrat})$ & $w_1$ & \textbf{FAUX} (faux en $w_3$) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent \textbf{Propriétés de $R$} (calculées automatiquement par la GUI) :
+non réflexive, non transitive, non symétrique, mais \emph{sérielle}
+(chaque monde a au moins un successeur).
+
+\newpage
+% ============================================================
+\section{TP~2 --- Logique des Défauts}
+
+\subsection*{Domaine choisi}
+
+Industrie musicale algérienne, focalisée sur la question des droits d'auteur
+et du statut contractuel des artistes. On modélise quatre artistes
+(\emph{Soolking, Feu, Tif, Flenn}) avec leurs faits connus :
+
+\begin{center}\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Artiste} & \textbf{Faits connus} & \textbf{Situation représentée} \\
+\midrule
+Soolking  & EstArtiste + SigneLabel + AlbumSorti       & Artiste signé avec album sorti \\
+DZ\_Master & EstArtiste + IndepLongtemps + NouveauContrat & Indépendant qui vient de signer \\
+Atlas     & EstArtiste + AlbumSorti + PlusDeDeuxAns    & Artiste expérimenté \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Représentation}
+
+Théorie de défauts $\Delta = (W, D)$ où $W$ est l'ensemble des faits certains
+et $D$ celui des règles par défaut. Chaque défaut s'écrit :
+\[
+\frac{\alpha \;:\; \beta}{\gamma}
+\quad\text{(prérequis : justification / conclusion)}
+\]
+
+\noindent Les sept défauts du domaine :
+\begin{align*}
+d_1 &: \text{EstArtiste}(x) \,:\, \text{LibreDroits}(x) \,/\, \text{LibreDroits}(x) \\
+d_2 &: \text{SigneLabel}(x) \,:\, \lnot\text{LibreDroits}(x) \,/\, \lnot\text{LibreDroits}(x) \\
+d_3 &: \text{EstArtiste}(x) \land \text{AlbumSorti}(x) \,:\, \text{Royalties}(x) \,/\, \text{Royalties}(x) \\
+d_4 &: \text{SigneLabel}(x) \,:\, \text{PartageRoyalties}(x) \,/\, \text{PartageRoyalties}(x) \\
+d_5 &: \text{IndepLongtemps}(x) \,:\, \text{ExpSolo}(x) \,/\, \text{ExpSolo}(x) \\
+d_6 &: \text{NouveauContrat}(x) \,:\, \lnot\text{LibreDroits}(x) \,/\, \lnot\text{LibreDroits}(x) \\
+d_7 &: \text{PlusDe2Ans}(x) \land \text{AlbumSorti}(x) \,:\, \text{AlbumCertifie}(x) \,/\, \text{AlbumCertifie}(x)
+\end{align*}
+
+\noindent Implémentation via \code{RdlParser} et \code{SimpleDefaultReasoner}
+de Tweety, qui calculent les \emph{extensions} (ensembles stables au sens de
+Reiter).
+
+\subsection*{Exploitation}
+
+\textbf{Q1 --- Soolking} ($d_1$ et $d_2$ entrent en conflit) :
+\textbf{2~extensions} stables sont calculées. L'une contient
+\code{LibreDroits(soolking)}, l'autre $\lnot\text{LibreDroits(soolking)}$.
+Les défauts $d_3$ et $d_4$ s'appliquent dans les deux $\Rightarrow$
+\code{Royalties} et \code{PartageRoyalties} dans toutes les extensions.
+
+\textbf{Q4 --- Atlas (démo non-monotonie).}
+\begin{center}\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Théorie} & \textbf{Extensions} & \textbf{LibreDroits(atlas)} \\
+\midrule
+$W_0 = \{\text{EstArtiste, AlbumSorti, PlusDe2Ans}\}$ & 1 extension & \textbf{présent} ($\checkmark$) \\
+$W_0 \cup \{\text{SigneLabel(atlas)}\}$               & 2 extensions & \textbf{plus dans toutes} ($\times$) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent L'ajout du fait \code{SigneLabel(atlas)} déclenche $d_2$ qui entre en
+conflit avec $d_1$ : la conclusion \code{LibreDroits(atlas)}, valide dans la
+première théorie, n'est plus dérivable dans toutes les extensions de la seconde.
+C'est la \textbf{non-monotonie} du raisonnement par défaut.
+
+\newpage
+% ============================================================
+\section{TP~3 --- Logique Classique (Propositionnelle \& Prédicats)}
+
+\subsection*{Domaine choisi}
+
+Le même quatuor d'artistes (\emph{Soolking, Feu, Tif, Flenn}) est modélisé
+deux fois : (i)~en propositionnel, où chaque artiste est un atome
+indépendant, (ii)~en prédicats, où l'on utilise un seul prédicat universel
+$\forall x$ qui s'instancie sur les quatre individus.
+
+\noindent Côté justice, trois accusés : \emph{Ali} (avec témoignage favorable),
+\emph{Omar} (récidiviste), \emph{Karim} (mineur poursuivi pour crime grave).
+
+\subsection*{Représentation propositionnelle (CNF + SAT4J)}
+
+Faits (clauses unitaires) : \code{soolking}, \code{feu}, \code{tif},
+\code{flenn}, \code{signe\_soolking}, \code{signe\_feu}, \code{indep\_feu}.
+Clauses dérivationnelles :
+\begin{align*}
+c_1 &= \lnot\text{soolking} \lor \lnot\text{signe\_soolking} \lor \text{partage\_soolking} \\
+c_2 &= \lnot\text{feu} \lor \lnot\text{signe\_feu} \lor \text{partage\_feu} \\
+c_3 &= \lnot\text{tif} \lor \text{royalties\_tif} \\
+c_4 &= \lnot\text{flenn} \lor \text{royalties\_flenn} \\
+c_5 &= \lnot\text{indep\_feu} \lor \text{expsolo\_feu}
+\end{align*}
+
+\noindent Le test d'entailment $\text{KB} \models \varphi$ est réalisé par
+\emph{réfutation} via \code{Sat4jSolver} (encapsulé dans \code{SatReasoner} de
+Tweety) : $\text{KB} \models \varphi$ ssi $\text{KB} \cup \{\lnot\varphi\}$
+est insatisfiable.
+
+\subsection*{Représentation par prédicats (chaînage avant)}
+
+Domaine fini $\{$soolking, feu, tif, flenn$\}$. Axiomes universels :
+\begin{align*}
+\text{ax}_1 &: \forall x\,(\text{EstRappeurAlgerien}(x) \Rightarrow \text{EstRappeur}(x)) \\
+\text{ax}_2 &: \forall x\,(\text{EstRappeur}(x) \Rightarrow \text{EstArtiste}(x)) \\
+\text{ax}_3 &: \forall x\,(\text{EstArtiste}(x) \Rightarrow \text{EstMusicien}(x)) \\
+\text{ax}_5 &: \forall x\,(\text{SigneLabel}(x) \Rightarrow \text{PartageRoyalties}(x))
+\end{align*}
+
+\noindent Le chaînage avant instancie chaque axiome sur tous les individus et
+dérive jusqu'au point fixe.
+
+\subsection*{Exploitation}
+
+\begin{center}\small
+\begin{tabular}{ll}
+\toprule
+\textbf{Requête} & \textbf{Résultat} \\
+\midrule
+KB satisfiable ?                                       & \textbf{VRAI} \\
+KB $\models$ partage\_soolking                         & \textbf{VRAI} (faits + $c_1$) \\
+KB $\models$ expsolo\_feu                              & \textbf{VRAI} (faits + $c_5$) \\
+KB $\cup\{\lnot\text{royalties\_flenn}\}$ satisfiable ? & \textbf{FAUX} (contradiction) \\
+$\forall x\,\text{EstMusicien}(x)$                     & \textbf{VRAI} (chaîne ax$_1$+ax$_2$+ax$_3$) \\
+$\exists x\,\text{ExperienceSolo}(x)$                  & \textbf{VRAI} (témoin : \emph{feu}) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent La GUI permet de tester en direct la satisfiabilité, l'entailment
+$\text{KB} \models \varphi$ et l'ajout temporaire de formules pour observer les
+contradictions provoquées.
+
+\newpage
+% ============================================================
+\section{TP~4 --- Logique de Description (OWL DL + HermiT)}
+
+\subsection*{Domaine choisi}
+
+Ontologie musicale algérienne riche, avec une hiérarchie de concepts
+(\code{Artiste} $\sq$ \code{Personne}, \code{Rappeur} $\sq$ \code{Artiste},
+\code{RappeurAlgerien} $\sq$ \code{Rappeur}\dots), des rôles
+(\code{signe\_chez}, \code{produit}, \code{recoit}\dots) et 10 individus
+nommés :
+
+\begin{center}\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Individu} & \textbf{Type asserté en ABox} & \textbf{Rôle} \\
+\midrule
+Soolking, Feu, Tif, Flenn   & RappeurAlgerien      & Rappeurs algériens \\
+Universal                   & MajorLabel           & Major label international \\
+Believe                     & IndependantLabel     & Label indépendant \\
+Guerilla, Dernière Heure    & Album                & Albums produits \\
+Cert\_Or, Cert\_Platine     & CertificationOr/Pl.  & Certifications de ventes \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Représentation (TBox)}
+
+Quelques axiomes terminologiques caractéristiques (sur 25+ au total) :
+\begin{align*}
+\text{Rappeur}            &\equiv \text{Artiste} \sqcap \exists\,\text{pratique}.\text{Rap} \\
+\text{RappeurAlgerien}    &\equiv \text{Rappeur} \sqcap \exists\,\text{chante\_en}.\text{Darija} \\
+\text{ArtisteSigne}       &\equiv \text{Artiste} \sqcap \exists\,\text{signe\_chez}.\text{Label} \\
+\text{ArtisteIndependant} &\equiv \text{Artiste} \sqcap \lnot\,\exists\,\text{signe\_chez}.\text{MajorLabel} \\
+\text{AlbumOr}            &\equiv \text{AlbumCertifie} \sqcap \exists\,\text{recoit}.\text{CertificationOr}
+\end{align*}
+
+\noindent ABox typique : \code{signe\_chez(soolking, universal)},
+\code{produit(soolking, guerilla)}, \code{recoit(guerilla, cert\_or)}, etc.
+Construction via OWL API 4.5 ; raisonnement par tableaux avec HermiT.
+
+\subsection*{Exploitation}
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{lcX}
+\toprule
+\textbf{Requête} & \textbf{Résultat} & \textbf{Justification (HermiT)} \\
+\midrule
+ArtisteIndependant(soolking)        & \textbf{FAUX} & signe\_chez universal:MajorLabel \\
+AlbumOr(guerilla)                   & \textbf{VRAI} & recoit(guerilla, certOr:CertificationOr) \\
+ArtisteMajor $\sq$ ArtisteSigne     & \textbf{VRAI} & MajorLabel $\sq$ Label \\
+Disjoint(ArtisteIndep, ArtisteMajor) & \textbf{VRAI} & par construction des définitions \\
+instances(ArtisteSigne)             & \{soolking, feu\} & signe\_chez vers un Label \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{Note OWA.} Sous l'\emph{Open World Assumption} (\textsc{owa}) d'OWL,
+l'absence d'un fait n'est pas une négation. Pour les concepts définis par un
+complément (ex. \code{ArtisteLibreDroits}), il a fallu insérer des assertions
+explicites en ABox pour \emph{Tif} et \emph{Flenn}, équivalent à une fermeture
+du monde locale.
+
+\noindent La GUI calcule \emph{dynamiquement} la hiérarchie des classes via
+\code{HermiT.getSubClasses} et l'affiche dans un \code{TreeView}. Trois modes
+de requête interactive sont disponibles : Instance ($a:C$), Subsomption
+($C \sq D$), et Disjonction ($C \sqcap D = \bot$).
+
+\newpage
+% ============================================================
+\section{TP~5 --- Réseaux Sémantiques}
+
+\subsection*{Domaine choisi}
+
+Deux réseaux structurellement similaires illustrent la même intuition :
+
+\begin{itemize}
+  \item \textbf{Musique} : hiérarchie \code{Artiste $\to$ ArtisteSigne $\to$
+        Soolking}, avec un \code{ArtisteIndep} qui hérite de \code{Artiste}
+        mais possède une \emph{exception stricte} $\lnot\text{sous-contrat}$
+        envers \code{Label}, annulant l'héritage général.
+  \item \textbf{Justice} : hiérarchie \code{PartieProcès $\to$ Accusé $\to$
+        Récidiviste}, où \code{Accusé} hérite de la \emph{présomption
+        d'innocence} ; le \code{Récidiviste} la perd via une exception stricte
+        $\lnot\text{presume}$.
+\end{itemize}
+
+\noindent Quatre styles d'arcs \code{is-a} (cours chapitre~5) :
+\code{S} (strict, règle absolue), \code{NS} (non-strict, typique),
+\code{ES} (exception stricte = lien barré), \code{EN} (exception non-stricte).
+Les \emph{modalités épistémiques} (« le Procureur croit que\dots ») sont
+construites structurellement par des nœuds-instances $C_1$, $N_1$ de classes
+modales \code{Croyances}, \code{Negations}.
+
+\subsection*{Représentation (extrait justice)}
+
+\begin{center}\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Arc} & \textbf{Style} & \textbf{Sémantique} \\
+\midrule
+Accuse $\xrightarrow{\text{is-a}}$ PartieProces          & S    & Tout accusé est une partie au procès \\
+Recidiviste $\xrightarrow{\text{is-a}}$ Accuse           & S    & Tout récidiviste est un accusé \\
+Accuse $\xrightarrow{\text{presume}}$ Innocence          & rel. & Présomption d'innocence (héritée) \\
+Recidiviste $\xrightarrow{\lnot\text{presume}}$ Innocence & ES   & \textbf{Exception stricte} : bloque l'héritage \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Algorithme d'héritage avec exceptions}
+
+Notre moteur \code{inherits(n, r, t)} effectue un BFS depuis le nœud $n$ : à
+chaque niveau, si un arc direct $\xrightarrow{r} t$ est trouvé, son signe
+décide immédiatement (positif $\Rightarrow$ \code{INHERITED}, négatif
+$\Rightarrow$ \code{BLOCKED}). Sinon on remonte les arcs \code{is-a}. C'est
+le \textbf{principe de proximité} : la spécialisation la plus proche prime.
+
+\begin{lstlisting}[caption={Moteur d'héritage (extrait)}]
+public enum Inheritance { INHERITED, BLOCKED, NOT_FOUND }
+
+public InheritanceTrace inherits(String n, String r, String t) {
+    // BFS depuis n sur les arcs is-a
+    // A chaque niveau, on cherche un arc direct (n', r, t)
+    //   - positif -> INHERITED (decision proche prime)
+    //   - negatif -> BLOCKED (exception ES/EN)
+    // Sinon, on remonte. Si epuisement -> NOT_FOUND.
+}
+\end{lstlisting}
+
+\subsection*{Exploitation}
+
+\begin{center}\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Requête} & \textbf{Résultat} & \textbf{Pourquoi} \\
+\midrule
+Accuse presume Innocence ?      & \textbf{INHERITED} & arc direct sur Accuse \\
+Recidiviste presume Innocence ? & \textbf{BLOCKED}   & exception $\lnot$presume au niveau Recidiviste \\
+Soolking sous-contrat Label ?   & \textbf{INHERITED} & hérité via ArtisteSigne \\
+ArtisteIndep sous-contrat Label ? & \textbf{BLOCKED} & exception stricte $\lnot$sous-contrat \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent La GUI dessine le réseau avec un \emph{layout hiérarchique
+auto-calculé}, des arcs en \emph{courbes de Bézier}, un \emph{hover} qui
+illumine les arcs sortants, et colore les nœuds en vert (\code{INHERITED}) ou
+en rouge (\code{BLOCKED}) lors d'une requête avec relation cible.
+
+\newpage
+% ============================================================
+\section{Synthèse comparative}
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{lccccX}
+\toprule
+\textbf{Formalisme} & \textbf{Monotone} & \textbf{Hypoth.\ monde} & \textbf{Exceptions} & \textbf{Standard} & \textbf{Outil} \\
+\midrule
+Modale (Kripke)        & oui          & ---  & ---           & K, T, S4, S5      & Tweety MLogic \\
+Défauts (Reiter)       & \textbf{non} & CWA  & multi-ext.    & Reiter 80         & Tweety RDL \\
+Classique (Prop+FOL)   & oui          & CWA  & ---           & SAT, FOL          & SAT4J + Tweety FOL \\
+Description (OWL DL)   & oui          & \textbf{OWA} & ---   & OWL 2 / W3C       & OWL API + HermiT \\
+Réseaux sémantiques    & \textbf{non} & ---  & \textbf{ES/EN} & Quillian, Fahlman & Code Java ad hoc \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent Le cas \emph{Récidiviste} illustre la complémentarité : représenté
+comme \emph{exception stricte} en réseaux sémantiques, comme \emph{défaut $d_6$
+en conflit avec $d_1$} en logique des défauts, et comme \emph{classe
+\code{AccuseRecidiviste} qui force \code{CasComplexe}} en logique de
+description. Trois représentations différentes pour une même intuition
+juridique.
+
+\newpage
+% ============================================================
+\section{Bibliothèques et références}
+
+\subsection*{Toolboxes et bibliothèques utilisées}
+
+\begin{itemize}
+  \item \textbf{TweetyProject 1.27}
+        --- Toolbox Java pour les logiques computationnelles
+        (modale, défauts, propositionnelle, FOL\dots).
+        \href{https://tweetyproject.org/}{\nolinkurl{https://tweetyproject.org/}}\\
+        Dépôt source :
+        \href{https://github.com/TweetyProjectTeam/TweetyProject}%
+             {\nolinkurl{https://github.com/TweetyProjectTeam/TweetyProject}}
+
+  \item \textbf{OWL API 4.5.29}
+        --- Bibliothèque de référence pour la création et la manipulation
+        d'ontologies OWL~2 (W3C).
+        \href{http://owlcs.github.io/owlapi/}{\nolinkurl{http://owlcs.github.io/owlapi/}}\\
+        Dépôt source :
+        \href{https://github.com/owlcs/owlapi}{\nolinkurl{https://github.com/owlcs/owlapi}}
+
+  \item \textbf{HermiT 1.4.3.456}
+        --- Raisonneur OWL~DL par tableaux, supportant la décidabilité de
+        \textsc{sroiq}.
+        \href{http://www.hermit-reasoner.com/}{\nolinkurl{http://www.hermit-reasoner.com/}}
+
+  \item \textbf{SAT4J} --- Solveur SAT Java pur, intégré nativement à
+        TweetyProject pour la propositionnelle.
+        \href{https://www.sat4j.org/}{\nolinkurl{https://www.sat4j.org/}}
+
+  \item \textbf{JavaFX 17} --- Framework graphique pour l'interface utilisateur.
+        \href{https://openjfx.io/}{\nolinkurl{https://openjfx.io/}}
+
+  \item \textbf{Maven 3.6+} --- Gestion de projet et dépendances.
+        \href{https://maven.apache.org/}{\nolinkurl{https://maven.apache.org/}}
+
+  \item \textbf{Java JDK 11} (OpenJDK).
+        \href{https://openjdk.org/}{\nolinkurl{https://openjdk.org/}}
+\end{itemize}
+
+\subsection*{Documentation technique consultée}
+
+\begin{itemize}
+  \item Tweety --- documentation et tutoriels :
+        \href{https://tweetyproject.org/doc/}{\nolinkurl{https://tweetyproject.org/doc/}}
+
+  \item OWL 2 Web Ontology Language (W3C Recommendation) :
+        \href{https://www.w3.org/TR/owl2-overview/}{\nolinkurl{https://www.w3.org/TR/owl2-overview/}}
+
+  \item OWL API --- Javadoc et exemples :
+        \href{https://owlcs.github.io/owlapi/apidocs_4/}%
+             {\nolinkurl{https://owlcs.github.io/owlapi/apidocs_4/}}
+\end{itemize}
+
+\subsection*{Références théoriques}
+
+\begin{itemize}
+  \item \textbf{Reiter, R.} (1980). \emph{A Logic for Default Reasoning}.
+        Artificial Intelligence, 13(1--2), 81--132.
+
+  \item \textbf{Baader, F. et al.} (2003). \emph{The Description Logic Handbook}.
+        Cambridge University Press.
+
+  \item \textbf{Kripke, S.A.} (1963). \emph{Semantical considerations on modal
+        logic}. Acta Philosophica Fennica, 16, 83--94.
+
+  \item \textbf{Quillian, M.R.} (1968). \emph{Semantic Memory}.
+        In : \emph{Semantic Information Processing}, MIT Press.
+
+  \item \textbf{Fahlman, S.E.} (1979). \emph{NETL : a System for Representing
+        and Using Real-World Knowledge}. MIT Press.
+
+  \item Cours \textbf{RCR1} (Master 1 SII, USTHB, 2025--2026), notamment le
+        chapitre~5 sur les réseaux sémantiques (conventions S / NS / ES / EN,
+        construction structurelle des modalités).
+\end{itemize}
+
+\newpage
+% ============================================================
+\section{Conclusion}
+
+Les cinq TPs montrent qu'aucun formalisme n'est universellement supérieur :
+le choix dépend du domaine et des garanties souhaitées. La logique modale
+capture les modalités (nécessité, possibilité) ; les défauts et les réseaux
+sémantiques permettent la non-monotonie ; la logique classique offre une
+sémantique simple mais rigide ; la logique de description hérite des
+optimisations standardisées d'OWL~DL.
+
+\medskip
+\noindent Toutes les implémentations sont opérationnelles
+(\code{mvn clean compile} $\to$ \textsc{build success}, 23 fichiers Java) et
+interrogeables via la GUI unifiée (\code{mvn javafx:run}). Le code source
+ainsi qu'un rapport détaillé sont disponibles dans le dépôt du projet.
+
+\end{document}

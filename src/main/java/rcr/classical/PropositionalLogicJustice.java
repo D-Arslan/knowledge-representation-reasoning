@@ -35,12 +35,42 @@ public class PropositionalLogicJustice {
         return d;
     }
 
-    private static boolean isSat(PlBeliefSet kb) {
-        return !REASONER.query(kb, FRESH);
+    private static boolean isSat(PlBeliefSet kb) { return isSatisfiable(kb); }
+
+    /**
+     * KB de base (sans c6 — conserve la cohérence pour Q1-Q5).
+     * Exposée pour requêtes GUI interactives.
+     */
+    public static PlBeliefSet buildKB() {
+        Proposition ali      = new Proposition("ali");
+        Proposition omar     = new Proposition("omar");
+        Proposition karim    = new Proposition("karim");
+        Proposition tem_a    = new Proposition("temoignage_ali");
+        Proposition rec_o    = new Proposition("recidiviste_omar");
+        Proposition min_k    = new Proposition("mineur_karim");
+        Proposition cg_k     = new Proposition("crime_grave_karim");
+        Proposition inn_a    = new Proposition("innocent_ali");
+        Proposition inn_o    = new Proposition("innocent_omar");
+        Proposition acq_a    = new Proposition("acquitte_ali");
+        Proposition peine_o  = new Proposition("peine_lourde_omar");
+        Proposition trib_k   = new Proposition("tribunal_enfants_karim");
+        PlBeliefSet kb = new PlBeliefSet();
+        kb.add(ali); kb.add(omar); kb.add(karim);
+        kb.add(tem_a); kb.add(rec_o); kb.add(min_k); kb.add(cg_k);
+        kb.add(or(neg(ali), inn_a));              // c1
+        kb.add(or(neg(ali), neg(tem_a), acq_a)); // c2
+        kb.add(or(neg(omar), inn_o));             // c3
+        kb.add(or(neg(rec_o), peine_o));          // c4
+        kb.add(or(neg(min_k), trib_k));           // c5
+        return kb;
     }
 
-    private static boolean entails(PlBeliefSet kb, PlFormula phi) {
+    public static boolean entails(PlBeliefSet kb, PlFormula phi) {
         return REASONER.query(kb, phi);
+    }
+
+    public static boolean isSatisfiable(PlBeliefSet kb) {
+        return !REASONER.query(kb, FRESH);
     }
 
     public static void run() {

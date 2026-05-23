@@ -32,6 +32,209 @@ public class DescriptionLogicJustice {
     }
 
     // ---------------------------------------------------------------
+    // Construction publique de l'ontologie (utilisée par la GUI pour
+    // interroger HermiT en interactif sans relancer toutes les requêtes).
+    // Code dupliqué de run() pour ne pas casser le mode console.
+    // ---------------------------------------------------------------
+    public static OWLOntology buildOntology() {
+        OWLOntologyManager mgr = OWLManager.createOWLOntologyManager();
+        try {
+            OWLOntology onto = mgr.createOntology(IRI.create("http://rcr1/justice"));
+            OWLDataFactory f = mgr.getOWLDataFactory();
+
+            // ===== Classes =====
+            OWLClass Personne             = f.getOWLClass(iri("Personne"));
+            OWLClass ActeurJudiciaire     = f.getOWLClass(iri("ActeurJudiciaire"));
+            OWLClass Magistrat            = f.getOWLClass(iri("Magistrat"));
+            OWLClass Juge                 = f.getOWLClass(iri("Juge"));
+            OWLClass Procureur            = f.getOWLClass(iri("Procureur"));
+            OWLClass Avocat               = f.getOWLClass(iri("Avocat"));
+            OWLClass Accuse               = f.getOWLClass(iri("Accuse"));
+            OWLClass Temoin               = f.getOWLClass(iri("Temoin"));
+            OWLClass Infraction           = f.getOWLClass(iri("Infraction"));
+            OWLClass Crime                = f.getOWLClass(iri("Crime"));
+            OWLClass Delit                = f.getOWLClass(iri("Delit"));
+            OWLClass Contravention        = f.getOWLClass(iri("Contravention"));
+            OWLClass CrimeOrganise        = f.getOWLClass(iri("CrimeOrganise"));
+            OWLClass CrimeGrave           = f.getOWLClass(iri("CrimeGrave"));
+            OWLClass Tribunal             = f.getOWLClass(iri("Tribunal"));
+            OWLClass CourAssises          = f.getOWLClass(iri("CourAssises"));
+            OWLClass TribunalCorrectionnel = f.getOWLClass(iri("TribunalCorrectionnel"));
+            OWLClass TribunalEnfants      = f.getOWLClass(iri("TribunalEnfants"));
+            OWLClass AccuseMineur         = f.getOWLClass(iri("AccuseMineur"));
+            OWLClass AccuseRecidiviste    = f.getOWLClass(iri("AccuseRecidiviste"));
+            OWLClass AccusePresumInnocent = f.getOWLClass(iri("AccusePresumInnocent"));
+            OWLClass Condamne             = f.getOWLClass(iri("Condamne"));
+            OWLClass AccuseAvecTemoignage = f.getOWLClass(iri("AccuseAvecTemoignage"));
+            OWLClass CasSimple            = f.getOWLClass(iri("CasSimple"));
+            OWLClass CasComplexe          = f.getOWLClass(iri("CasComplexe"));
+            OWLClass Inculpation          = f.getOWLClass(iri("Inculpation"));
+            OWLClass Condamnation         = f.getOWLClass(iri("Condamnation"));
+            OWLClass TemoignageFavorable  = f.getOWLClass(iri("TemoignageFavorable"));
+            OWLClass Peine                = f.getOWLClass(iri("Peine"));
+            OWLClass PeineReclusion       = f.getOWLClass(iri("PeineReclusion"));
+            OWLClass PeineEmprisonnement  = f.getOWLClass(iri("PeineEmprisonnement"));
+            OWLClass PeineAmende          = f.getOWLClass(iri("PeineAmende"));
+            OWLClass Audience             = f.getOWLClass(iri("Audience"));
+            OWLClass Proces               = f.getOWLClass(iri("Proces"));
+            OWLClass InfractionMineur     = f.getOWLClass(iri("InfractionMineur"));
+            OWLClass MoinsDe18Ans         = f.getOWLClass(iri("MoinsDe18Ans"));
+            OWLClass PrejudiceGrave       = f.getOWLClass(iri("PrejudiceGrave"));
+
+            // ===== Object Properties =====
+            OWLObjectProperty participe_a  = f.getOWLObjectProperty(iri("participe_a"));
+            OWLObjectProperty siege_a      = f.getOWLObjectProperty(iri("siege_a"));
+            OWLObjectProperty preside      = f.getOWLObjectProperty(iri("preside"));
+            OWLObjectProperty requiert     = f.getOWLObjectProperty(iri("requiert"));
+            OWLObjectProperty defend       = f.getOWLObjectProperty(iri("defend"));
+            OWLObjectProperty temoigne_dans = f.getOWLObjectProperty(iri("temoigne_dans"));
+            OWLObjectProperty fait_objet   = f.getOWLObjectProperty(iri("fait_objet"));
+            OWLObjectProperty beneficie    = f.getOWLObjectProperty(iri("beneficie"));
+            OWLObjectProperty a_antecedent = f.getOWLObjectProperty(iri("a_antecedent"));
+            OWLObjectProperty a_age        = f.getOWLObjectProperty(iri("a_age"));
+            OWLObjectProperty puni_par     = f.getOWLObjectProperty(iri("puni_par"));
+            OWLObjectProperty cause        = f.getOWLObjectProperty(iri("cause"));
+            OWLObjectProperty implique     = f.getOWLObjectProperty(iri("implique"));
+            OWLObjectProperty juge_par     = f.getOWLObjectProperty(iri("juge_par"));
+            OWLObjectProperty defendu_par  = f.getOWLObjectProperty(iri("defendu_par"));
+            OWLObjectProperty juge_prop    = f.getOWLObjectProperty(iri("juge"));
+
+            // ===== TBox =====
+            ax(mgr, onto, f.getOWLSubClassOfAxiom(ActeurJudiciaire, Personne));
+            ax(mgr, onto, f.getOWLSubClassOfAxiom(Accuse, Personne));
+            ax(mgr, onto, f.getOWLSubClassOfAxiom(Magistrat, ActeurJudiciaire));
+            ax(mgr, onto, f.getOWLSubClassOfAxiom(PeineReclusion, Peine));
+            ax(mgr, onto, f.getOWLSubClassOfAxiom(PeineEmprisonnement, Peine));
+            ax(mgr, onto, f.getOWLSubClassOfAxiom(PeineAmende, Peine));
+            ax(mgr, onto, f.getOWLSubClassOfAxiom(CourAssises, Tribunal));
+            ax(mgr, onto, f.getOWLSubClassOfAxiom(TribunalCorrectionnel, Tribunal));
+            ax(mgr, onto, f.getOWLSubClassOfAxiom(TribunalEnfants, Tribunal));
+            ax(mgr, onto, f.getOWLSubClassOfAxiom(CrimeGrave, Crime));
+            ax(mgr, onto, f.getOWLSubClassOfAxiom(CrimeOrganise, Crime));
+            ax(mgr, onto, f.getOWLSubClassOfAxiom(Crime, Infraction));
+            ax(mgr, onto, f.getOWLSubClassOfAxiom(Delit, Infraction));
+            ax(mgr, onto, f.getOWLSubClassOfAxiom(Contravention, Infraction));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(ActeurJudiciaire,
+                f.getOWLObjectIntersectionOf(Personne,
+                    f.getOWLObjectSomeValuesFrom(participe_a, Proces))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(Magistrat,
+                f.getOWLObjectIntersectionOf(ActeurJudiciaire,
+                    f.getOWLObjectSomeValuesFrom(siege_a, Tribunal))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(Juge,
+                f.getOWLObjectIntersectionOf(Magistrat,
+                    f.getOWLObjectSomeValuesFrom(preside, Audience))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(Procureur,
+                f.getOWLObjectIntersectionOf(Magistrat,
+                    f.getOWLObjectSomeValuesFrom(requiert, Peine))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(Avocat,
+                f.getOWLObjectIntersectionOf(ActeurJudiciaire,
+                    f.getOWLObjectSomeValuesFrom(defend, Accuse))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(Accuse,
+                f.getOWLObjectIntersectionOf(Personne,
+                    f.getOWLObjectSomeValuesFrom(fait_objet, Inculpation))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(Temoin,
+                f.getOWLObjectIntersectionOf(ActeurJudiciaire,
+                    f.getOWLObjectSomeValuesFrom(temoigne_dans, Proces))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(Crime,
+                f.getOWLObjectIntersectionOf(Infraction,
+                    f.getOWLObjectSomeValuesFrom(puni_par, PeineReclusion))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(Delit,
+                f.getOWLObjectIntersectionOf(Infraction,
+                    f.getOWLObjectSomeValuesFrom(puni_par, PeineEmprisonnement))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(Contravention,
+                f.getOWLObjectIntersectionOf(Infraction,
+                    f.getOWLObjectSomeValuesFrom(puni_par, PeineAmende))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(CrimeOrganise,
+                f.getOWLObjectIntersectionOf(Crime,
+                    f.getOWLObjectSomeValuesFrom(implique, f.getOWLClass(iri("Organisation"))))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(CrimeGrave,
+                f.getOWLObjectIntersectionOf(Crime,
+                    f.getOWLObjectSomeValuesFrom(cause, PrejudiceGrave))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(CourAssises,
+                f.getOWLObjectIntersectionOf(Tribunal,
+                    f.getOWLObjectAllValuesFrom(juge_prop, Crime))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(TribunalCorrectionnel,
+                f.getOWLObjectIntersectionOf(Tribunal,
+                    f.getOWLObjectAllValuesFrom(juge_prop, Delit))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(TribunalEnfants,
+                f.getOWLObjectIntersectionOf(Tribunal,
+                    f.getOWLObjectAllValuesFrom(juge_prop, InfractionMineur))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(AccuseMineur,
+                f.getOWLObjectIntersectionOf(Accuse,
+                    f.getOWLObjectSomeValuesFrom(a_age, MoinsDe18Ans))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(AccuseRecidiviste,
+                f.getOWLObjectIntersectionOf(Accuse,
+                    f.getOWLObjectSomeValuesFrom(a_antecedent, Condamnation))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(AccusePresumInnocent,
+                f.getOWLObjectIntersectionOf(Accuse,
+                    f.getOWLObjectComplementOf(Condamne))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(AccuseAvecTemoignage,
+                f.getOWLObjectIntersectionOf(Accuse,
+                    f.getOWLObjectSomeValuesFrom(beneficie, TemoignageFavorable))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(CasSimple,
+                f.getOWLObjectIntersectionOf(Accuse,
+                    f.getOWLObjectComplementOf(AccuseRecidiviste),
+                    f.getOWLObjectComplementOf(AccuseMineur))));
+            ax(mgr, onto, f.getOWLEquivalentClassesAxiom(CasComplexe,
+                f.getOWLObjectIntersectionOf(Accuse,
+                    f.getOWLObjectUnionOf(AccuseRecidiviste, AccuseMineur))));
+
+            // ===== Individuals =====
+            OWLNamedIndividual ali               = f.getOWLNamedIndividual(iri("ali"));
+            OWLNamedIndividual omar              = f.getOWLNamedIndividual(iri("omar"));
+            OWLNamedIndividual karim             = f.getOWLNamedIndividual(iri("karim"));
+            OWLNamedIndividual jugeSalem         = f.getOWLNamedIndividual(iri("juge_salem"));
+            OWLNamedIndividual avocatRiad        = f.getOWLNamedIndividual(iri("avocat_riad"));
+            OWLNamedIndividual procureurMalik    = f.getOWLNamedIndividual(iri("procureur_malik"));
+            OWLNamedIndividual temoignageAli     = f.getOWLNamedIndividual(iri("temoignage_ali"));
+            OWLNamedIndividual antecedentOmar    = f.getOWLNamedIndividual(iri("antecedent_omar"));
+            OWLNamedIndividual inculpationKarim  = f.getOWLNamedIndividual(iri("inculpation_karim"));
+            OWLNamedIndividual crimeKarim        = f.getOWLNamedIndividual(iri("crime_karim"));
+            OWLNamedIndividual courAssisesInd    = f.getOWLNamedIndividual(iri("cour_assises"));
+            OWLNamedIndividual tcInd             = f.getOWLNamedIndividual(iri("trib_correctionnel"));
+            OWLNamedIndividual teInd             = f.getOWLNamedIndividual(iri("trib_enfants"));
+
+            ax(mgr, onto, f.getOWLDifferentIndividualsAxiom(
+                ali, omar, karim,
+                jugeSalem, avocatRiad, procureurMalik,
+                temoignageAli, antecedentOmar, inculpationKarim, crimeKarim,
+                courAssisesInd, tcInd, teInd));
+
+            // ===== ABox — assertions de classes =====
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(Accuse, ali));
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(Accuse, omar));
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(Accuse, karim));
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(Juge, jugeSalem));
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(Avocat, avocatRiad));
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(Procureur, procureurMalik));
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(TemoignageFavorable, temoignageAli));
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(Condamnation, antecedentOmar));
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(Inculpation, inculpationKarim));
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(CrimeGrave, crimeKarim));
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(CourAssises, courAssisesInd));
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(TribunalCorrectionnel, tcInd));
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(TribunalEnfants, teInd));
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(AccusePresumInnocent, ali));
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(AccuseMineur, karim));
+            ax(mgr, onto, f.getOWLClassAssertionAxiom(CasSimple, ali));
+
+            // ===== ABox — assertions de propriétés =====
+            ax(mgr, onto, f.getOWLObjectPropertyAssertionAxiom(beneficie, ali, temoignageAli));
+            ax(mgr, onto, f.getOWLObjectPropertyAssertionAxiom(a_antecedent, omar, antecedentOmar));
+            ax(mgr, onto, f.getOWLObjectPropertyAssertionAxiom(fait_objet, karim, crimeKarim));
+            ax(mgr, onto, f.getOWLObjectPropertyAssertionAxiom(defendu_par, ali, avocatRiad));
+            ax(mgr, onto, f.getOWLObjectPropertyAssertionAxiom(juge_par, omar, tcInd));
+            ax(mgr, onto, f.getOWLObjectPropertyAssertionAxiom(juge_par, karim, teInd));
+            ax(mgr, onto, f.getOWLObjectPropertyAssertionAxiom(siege_a, jugeSalem, courAssisesInd));
+            ax(mgr, onto, f.getOWLObjectPropertyAssertionAxiom(siege_a, procureurMalik, courAssisesInd));
+
+            return onto;
+        } catch (OWLOntologyCreationException e) {
+            throw new RuntimeException("Erreur construction ontologie justice : " + e.getMessage(), e);
+        }
+    }
+
+    // ---------------------------------------------------------------
     // Point d'entrée
     // ---------------------------------------------------------------
     public static void run() {

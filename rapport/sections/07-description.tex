@@ -324,3 +324,73 @@ boolean sub = reasoner.isEntailed(
     f.getOWLSubClassOfAxiom(ArtisteMajor, ArtisteSigne));
 // → true
 \end{lstlisting}
+
+\section{Interface graphique interactive}
+
+La fenêtre \emph{Logique de Description} se présente en deux colonnes,
+précédées d'un \textbf{indicateur de chargement} pendant l'initialisation
+d'HermiT (asynchrone, $\approx$~2~s au premier lancement).
+
+\subsection{Exploration de l'ontologie (colonne gauche)}
+
+\begin{description}
+  \item[Statistiques en direct] nombre de classes, d'individus, d'axiomes et
+        état de consistance (\code{reasoner.isConsistent()}).
+
+  \item[Hiérarchie des classes (TreeView)] \emph{calculée dynamiquement} par
+        HermiT via \code{getSubClasses(c, true)}, et non codée en dur. Chaque
+        nœud affiche le nombre d'instances directes
+        (\code{getInstances(c, true)}). C'est l'équivalent simplifié de la
+        vue \emph{Class hierarchy} de Protégé : toute modification de la TBox
+        dans \file{DescriptionLogicMusic.java} s'y reflète automatiquement au
+        prochain lancement.
+
+  \item[Liste des individus (ListView)] chaque individu apparaît avec ses
+        types inférés (par exemple \code{soolking : ArtisteMajor,}
+        \code{ArtistePartageRoyalties, RappeurAlgerien}), ce qui matérialise
+        visuellement les déductions du raisonneur.
+\end{description}
+
+\subsection{Requêtes interactives (colonne droite)}
+
+Trois onglets correspondent aux trois services de raisonnement principaux
+d'HermiT~:
+
+\begin{description}
+  \item[Instance] \emph{« l'individu $a$ est-il une instance de la classe $C$ ? »}
+        — appel à \code{reasoner.isEntailed(f.getOWLClassAssertionAxiom(C, a))}.
+  \item[Subsomption] \emph{« $C \sq D$ ? »} —
+        \code{reasoner.isEntailed(f.getOWLSubClassOfAxiom(C, D))}.
+  \item[Disjonction] \emph{« $C \dlinter D = \bot$ ? »} —
+        \code{reasoner.isEntailed(f.getOWLDisjointClassesAxiom(C, D))}.
+\end{description}
+
+\noindent Chaque résultat s'empile dans un \textbf{historique coloré}
+($\checkmark$ vert pour VRAI, $\times$ rouge pour FAUX), ce qui permet de
+comparer plusieurs requêtes sans effacer les précédentes.
+Un bouton « Lancer les requêtes R1–R10 » conserve l'ancien mode console
+(capture de \code{System.out}) pour la démo complète.
+
+\subsection{Choix d'implémentation}
+
+Pour éviter de relancer toute la construction de l'ontologie à chaque clic,
+les classes \code{DescriptionLogicMusic} et \code{DescriptionLogicJustice}
+exposent une méthode statique publique \code{buildOntology()} qui retourne
+l'objet \code{OWLOntology}. Le contrôleur charge cet objet une seule fois en
+arrière-plan, instancie le raisonneur (\code{ReasonerFactory.createReasoner})
+et précompile les inférences nécessaires
+(\code{precomputeInferences(CLASS\_HIERARCHY, CLASS\_ASSERTIONS)}). Les
+requêtes interactives sont ensuite quasi instantanées car HermiT reste vivant
+en mémoire.
+
+\begin{tcolorbox}[notebox, title={Exemple de session pour démontrer R10}]
+Pour reproduire interactivement la démonstration de non-monotonie de R10 :
+\begin{enumerate}
+  \item Onglet \emph{Instance} : tester
+        \code{flenn : ArtisteLibreDroits} $\to$ \textbf{VRAI} (asserté).
+  \item Modifier l'ABox dans le code Java (ajout de
+        \code{signe\_chez(flenn, universal)}), relancer.
+  \item Refaire le même test : $\to$ \textbf{FAUX} (HermiT déduit que flenn
+        a maintenant un \code{signe\_chez} vers un \code{Label}).
+\end{enumerate}
+\end{tcolorbox}
