@@ -12,10 +12,16 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import rcr.modal.ModalLogicJustice;
 import rcr.modal.ModalLogicMusic;
+import rcr.modal.temporal.TemporalLogicJustice;
+import rcr.modal.temporal.TemporalLogicMusic;
+
+import javafx.application.Platform;
+import javafx.scene.text.TextFlow;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.*;
+import java.util.function.BiFunction;
 
 public class ModalLogicController {
 
@@ -60,9 +66,198 @@ public class ModalLogicController {
         tabJustice.setContent(buildModelPane(
                 JUS_NAMES, JUS_POS, JUS_ATOMS, JUS_WATOMS, JUS_EDGES, false));
 
-        tabs.getTabs().addAll(tabMusic, tabJustice);
+        Tab tabTempMusic = new Tab("  ⏳ Musique Temporelle  ");
+        tabTempMusic.setContent(buildTemporalPane(true));
+
+        Tab tabTempJustice = new Tab("  ⏳ Justice Temporelle  ");
+        tabTempJustice.setContent(buildTemporalPane(false));
+
+        tabs.getTabs().addAll(tabMusic, tabJustice, tabTempMusic, tabTempJustice);
         root.setCenter(tabs);
         return root;
+    }
+
+    // ==================================================================
+    //  ONGLET TEMPOREL (G / F / H / P) — cours chap. 3
+    // ==================================================================
+    private SplitPane buildTemporalPane(boolean isMusic) {
+        // Donnees du domaine
+        List<String> instants = isMusic ? TemporalLogicMusic.INSTANTS : TemporalLogicJustice.INSTANTS;
+        Map<String, String> labels = isMusic ? TemporalLogicMusic.LABELS : TemporalLogicJustice.LABELS;
+        Map<String, Set<String>> V = isMusic ? TemporalLogicMusic.V : TemporalLogicJustice.V;
+
+        // Operateurs : 4 lambdas qui delegent aux methodes statiques publiques
+        BiFunction<String,String,Boolean> opG = isMusic ? TemporalLogicMusic::G : TemporalLogicJustice::G;
+        BiFunction<String,String,Boolean> opF = isMusic ? TemporalLogicMusic::F : TemporalLogicJustice::F;
+        BiFunction<String,String,Boolean> opH = isMusic ? TemporalLogicMusic::H : TemporalLogicJustice::H;
+        BiFunction<String,String,Boolean> opP = isMusic ? TemporalLogicMusic::P : TemporalLogicJustice::P;
+
+        SplitPane split = new SplitPane();
+        split.setOrientation(Orientation.HORIZONTAL);
+        split.setDividerPositions(0.58);
+        split.setStyle("-fx-background-color:#1e1e2e;");
+
+        // ----- GAUCHE : frise + tableau de verite -----
+        VBox left = new VBox(12);
+        left.setPadding(new Insets(14));
+        left.setStyle("-fx-background-color:#1e1e2e;");
+
+        Label titleTitle = section(isMusic ? "Carriere d'un artiste (Soolking)"
+                                            : "Deroulement d'un proces (Omar)");
+        Label subtitle = new Label("Modele <T, <, V> : T = instants chronologiques, < = ordre temporel");
+        subtitle.setStyle("-fx-text-fill:#6c7086;-fx-font-size:11px;");
+
+        // Frise chronologique en texte
+        Label friseTitle = field("Frise chronologique :");
+        VBox frise = new VBox(4);
+        frise.setStyle("-fx-background-color:#181825;-fx-padding:10;");
+        for (String t : instants) {
+            Label l = new Label("  " + t + "  →  " + labels.get(t));
+            l.setStyle("-fx-text-fill:#cdd6f4;-fx-font-family:Monospaced;-fx-font-size:11.5px;");
+            frise.getChildren().add(l);
+        }
+
+        // Tableau de verite atome x instant (GridPane)
+        Label tableTitle = field("Tableau de verite (V = vrai, . = faux) :");
+        GridPane truth = buildTruthTable(instants, V);
+        ScrollPane truthScroll = new ScrollPane(truth);
+        truthScroll.setFitToWidth(true);
+        truthScroll.setStyle("-fx-background-color:#181825;-fx-background:#181825;");
+        truthScroll.setPrefHeight(220);
+
+        left.getChildren().addAll(titleTitle, subtitle,
+                friseTitle, frise,
+                tableTitle, truthScroll);
+
+        // ----- DROITE : requete interactive + historique -----
+        VBox right = new VBox(12);
+        right.setPadding(new Insets(14));
+        right.setStyle("-fx-background-color:#1e1e2e;");
+
+        Label rTitle = section("Requete temporelle");
+        Label rDesc = new Label("Selectionne un operateur, un atome et un instant\n"
+                              + "pour evaluer la formule sur le modele.");
+        rDesc.setStyle("-fx-text-fill:#a6adc8;-fx-font-size:11px;-fx-wrap-text:true;");
+
+        // Operateur
+        Label lblOp = field("Operateur temporel :");
+        ComboBox<String> opBox = new ComboBox<>();
+        opBox.getItems().addAll(
+                "G — sera TOUJOURS vrai dans le futur",
+                "F — sera vrai A UN MOMENT dans le futur",
+                "H — a TOUJOURS ete vrai dans le passe",
+                "P — a ete vrai A UN MOMENT dans le passe");
+        opBox.getSelectionModel().select(0);
+        opBox.setMaxWidth(Double.MAX_VALUE);
+
+        // Atome
+        Label lblAtom = field("Atome :");
+        ComboBox<String> atomBox = new ComboBox<>();
+        for (String a : V.keySet()) atomBox.getItems().add(a);
+        atomBox.getSelectionModel().select(0);
+        atomBox.setMaxWidth(Double.MAX_VALUE);
+
+        // Instant
+        Label lblInstant = field("Instant :");
+        ComboBox<String> instantBox = new ComboBox<>();
+        for (String t : instants) instantBox.getItems().add(t + "  (" + labels.get(t) + ")");
+        instantBox.getSelectionModel().select(0);
+        instantBox.setMaxWidth(Double.MAX_VALUE);
+
+        // Historique
+        TextFlow log = new TextFlow();
+        log.setStyle("-fx-background-color:#181825;-fx-padding:8;");
+        appendLogLine(log, "→ Lance une requete pour voir le resultat.", "#6c7086");
+        ScrollPane logScroll = new ScrollPane(log);
+        logScroll.setFitToWidth(true);
+        logScroll.setStyle("-fx-background-color:#181825;-fx-background:#181825;");
+        VBox.setVgrow(logScroll, Priority.ALWAYS);
+
+        // Bouton evaluer
+        Button btnEval = new Button("▶  Evaluer");
+        btnEval.setMaxWidth(Double.MAX_VALUE);
+        btnEval.setStyle("-fx-background-color:#89b4fa;-fx-text-fill:#1e1e2e;"
+                + "-fx-font-weight:bold;-fx-font-size:13px;-fx-padding:8 0;");
+        btnEval.setOnAction(e -> {
+            int idxOp = opBox.getSelectionModel().getSelectedIndex();
+            String atom = atomBox.getValue();
+            int idxT = instantBox.getSelectionModel().getSelectedIndex();
+            String t = instants.get(idxT);
+            char opSym = "GFHP".charAt(idxOp);
+            BiFunction<String,String,Boolean> op =
+                    (idxOp == 0) ? opG : (idxOp == 1) ? opF : (idxOp == 2) ? opH : opP;
+            boolean res = op.apply(atom, t);
+            String prefix = res ? "✅" : "❌";
+            String color = res ? "#a6e3a1" : "#f38ba8";
+            String line = prefix + "  " + opSym + " " + atom + "  en " + t
+                        + "   →  " + (res ? "VRAI" : "FAUX");
+            appendLogLine(log, line, color);
+        });
+
+        // Bouton clear
+        Button btnClear = new Button("✕  Effacer historique");
+        btnClear.setMaxWidth(Double.MAX_VALUE);
+        btnClear.setStyle("-fx-background-color:#45475a;-fx-text-fill:#cdd6f4;"
+                + "-fx-font-size:11px;-fx-padding:6 0;");
+        btnClear.setOnAction(e -> {
+            Platform.runLater(log.getChildren()::clear);
+            appendLogLine(log, "→ Historique efface.", "#6c7086");
+        });
+
+        Separator sep = new Separator();
+        sep.setStyle("-fx-background-color:#45475a;");
+        Label histTitle = section("Historique des requetes");
+
+        right.getChildren().addAll(rTitle, rDesc,
+                lblOp, opBox, lblAtom, atomBox, lblInstant, instantBox,
+                btnEval, btnClear,
+                sep, histTitle, logScroll);
+
+        split.getItems().addAll(left, right);
+        return split;
+    }
+
+    // ----- Tableau de verite (GridPane) -----
+    private GridPane buildTruthTable(List<String> instants, Map<String, Set<String>> V) {
+        GridPane grid = new GridPane();
+        grid.setHgap(6); grid.setVgap(3);
+        grid.setStyle("-fx-background-color:#181825;-fx-padding:10;");
+
+        // Header : ""  | t1 | t2 | ... | tN
+        Label headerEmpty = new Label("");
+        grid.add(headerEmpty, 0, 0);
+        for (int i = 0; i < instants.size(); i++) {
+            Label h = new Label(instants.get(i));
+            h.setStyle("-fx-text-fill:#fab387;-fx-font-weight:bold;-fx-font-family:Monospaced;"
+                    + "-fx-font-size:11.5px;-fx-padding:0 6;");
+            grid.add(h, i + 1, 0);
+        }
+
+        // Lignes
+        int row = 1;
+        for (Map.Entry<String, Set<String>> e : V.entrySet()) {
+            Label name = new Label(e.getKey());
+            name.setStyle("-fx-text-fill:#cdd6f4;-fx-font-family:Monospaced;-fx-font-size:11px;");
+            grid.add(name, 0, row);
+            for (int i = 0; i < instants.size(); i++) {
+                boolean v = e.getValue().contains(instants.get(i));
+                Label cell = new Label(v ? "V" : "·");
+                cell.setStyle("-fx-font-family:Monospaced;-fx-font-size:11.5px;-fx-font-weight:bold;"
+                        + "-fx-text-fill:" + (v ? "#a6e3a1" : "#45475a") + ";"
+                        + "-fx-padding:0 8;");
+                grid.add(cell, i + 1, row);
+            }
+            row++;
+        }
+        return grid;
+    }
+
+    private void appendLogLine(TextFlow flow, String text, String hexColor) {
+        Platform.runLater(() -> {
+            javafx.scene.text.Text t = new javafx.scene.text.Text(text + "\n");
+            t.setStyle("-fx-fill:" + hexColor + ";-fx-font-family:Monospaced;-fx-font-size:11.5px;");
+            flow.getChildren().add(t);
+        });
     }
 
     // ------------------------------------------------------------------

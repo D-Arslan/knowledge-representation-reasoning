@@ -20,9 +20,9 @@ import java.util.*;
 public class TemporalLogicJustice {
 
     // Instants chronologiques : t1 < t2 < t3 < t4 < t5 < t6
-    static final List<String> INSTANTS = Arrays.asList("t1","t2","t3","t4","t5","t6");
+    public static final List<String> INSTANTS = Arrays.asList("t1","t2","t3","t4","t5","t6");
 
-    static final Map<String, String> LABELS = new LinkedHashMap<>();
+    public static final Map<String, String> LABELS = new LinkedHashMap<>();
     static {
         LABELS.put("t1", "Infraction commise");
         LABELS.put("t2", "Arrestation et garde a vue");
@@ -33,7 +33,7 @@ public class TemporalLogicJustice {
     }
 
     // Valuation V
-    static final Map<String, Set<String>> V = new LinkedHashMap<>();
+    public static final Map<String, Set<String>> V = new LinkedHashMap<>();
     static {
         V.put("libre",            new LinkedHashSet<>(Arrays.asList("t1","t6")));
         V.put("en_detention",     new LinkedHashSet<>(Arrays.asList("t2","t3","t4","t5")));
@@ -65,19 +65,19 @@ public class TemporalLogicJustice {
         return V.getOrDefault(atom, Collections.emptySet()).contains(t);
     }
 
-    static boolean G(String atom, String t) {
+    public static boolean G(String atom, String t) {
         for (String s : futurs(t)) if (!vrai(atom, s)) return false;
         return true;
     }
-    static boolean F(String atom, String t) {
+    public static boolean F(String atom, String t) {
         for (String s : futurs(t)) if (vrai(atom, s)) return true;
         return false;
     }
-    static boolean H(String atom, String t) {
+    public static boolean H(String atom, String t) {
         for (String s : passes(t)) if (!vrai(atom, s)) return false;
         return true;
     }
-    static boolean P(String atom, String t) {
+    public static boolean P(String atom, String t) {
         for (String s : passes(t)) if (vrai(atom, s)) return true;
         return false;
     }

@@ -31,9 +31,9 @@ import java.util.*;
 public class TemporalLogicMusic {
 
     // Instants ordonnes chronologiquement : t1 < t2 < t3 < t4 < t5
-    static final List<String> INSTANTS = Arrays.asList("t1", "t2", "t3", "t4", "t5");
+    public static final List<String> INSTANTS = Arrays.asList("t1", "t2", "t3", "t4", "t5");
 
-    static final Map<String, String> LABELS = new LinkedHashMap<>();
+    public static final Map<String, String> LABELS = new LinkedHashMap<>();
     static {
         LABELS.put("t1", "2017 - Artiste independant");
         LABELS.put("t2", "2018 - Signe chez Universal");
@@ -43,7 +43,7 @@ public class TemporalLogicMusic {
     }
 
     // Valuation V : atome -> instants ou l'atome est vrai
-    static final Map<String, Set<String>> V = new LinkedHashMap<>();
+    public static final Map<String, Set<String>> V = new LinkedHashMap<>();
     static {
         V.put("artiste_independant", new LinkedHashSet<>(Arrays.asList("t1")));
         V.put("sous_contrat",        new LinkedHashSet<>(Arrays.asList("t2","t3","t4","t5")));
@@ -81,25 +81,25 @@ public class TemporalLogicMusic {
     // ============================================================
 
     /** G p en t : p sera TOUJOURS vrai dans le futur strict de t. */
-    static boolean G(String atom, String t) {
+    public static boolean G(String atom, String t) {
         for (String s : futurs(t)) if (!vrai(atom, s)) return false;
         return true;
     }
 
     /** F p en t : p sera vrai A UN MOMENT dans le futur strict de t. */
-    static boolean F(String atom, String t) {
+    public static boolean F(String atom, String t) {
         for (String s : futurs(t)) if (vrai(atom, s)) return true;
         return false;
     }
 
     /** H p en t : p a TOUJOURS ete vrai dans le passe strict de t. */
-    static boolean H(String atom, String t) {
+    public static boolean H(String atom, String t) {
         for (String s : passes(t)) if (!vrai(atom, s)) return false;
         return true;
     }
 
     /** P p en t : p a ete vrai A UN MOMENT dans le passe strict de t. */
-    static boolean P(String atom, String t) {
+    public static boolean P(String atom, String t) {
         for (String s : passes(t)) if (vrai(atom, s)) return true;
         return false;
     }
