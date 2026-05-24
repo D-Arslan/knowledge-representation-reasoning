@@ -243,3 +243,192 @@ boolean result = evaluate(w1, new Necessity(albumPlatine), R);
 \code{Negation}, \code{Conjunction}, \code{Disjunction}, \code{Implication},
 \code{Necessity} (itère sur tous les successeurs),
 \code{Possibility} (cherche un successeur satisfaisant).
+
+\section{Extension temporelle (logique modale du temps)}
+
+\subsection{Fondements}
+
+Le cours (chapitre~3, section temporelle) propose une spécialisation
+importante : faire de la relation d'accessibilité $R$ un \emph{ordre
+temporel}. Les mondes deviennent des \emph{instants} ; la relation $<$
+correspond au passage du temps (passé $\to$ futur). On ajoute quatre
+opérateurs :
+
+\begin{center}
+\begin{tabular}{cclc}
+\toprule
+\textbf{Opérateur} & \textbf{Lecture} & \textbf{Sémantique formelle} & \textbf{Modal classique} \\
+\midrule
+$\mathbf{G}\,\varphi$ & $\varphi$ sera toujours vraie dans le futur
+   & $\forall s,\; t<s \Rightarrow \mathcal{M},s\models\varphi$
+   & $\nec_{\text{futur}}$ \\
+$\mathbf{F}\,\varphi$ & $\varphi$ sera vraie à un moment dans le futur
+   & $\exists s,\; t<s \land \mathcal{M},s\models\varphi$
+   & $\pos_{\text{futur}}$ \\
+$\mathbf{H}\,\varphi$ & $\varphi$ a toujours été vraie dans le passé
+   & $\forall s,\; s<t \Rightarrow \mathcal{M},s\models\varphi$
+   & $\nec_{\text{passé}}$ \\
+$\mathbf{P}\,\varphi$ & $\varphi$ a été vraie à un moment dans le passé
+   & $\exists s,\; s<t \land \mathcal{M},s\models\varphi$
+   & $\pos_{\text{passé}}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent La vérité d'une proposition \textbf{change dans le temps}, ce qui est
+impossible à exprimer en logique modale classique sans cette extension.
+
+\subsection{Application --- carrière de Soolking}
+
+Cinq instants chronologiques représentent les années-clés du parcours d'un
+rappeur algérien :
+
+\begin{center}\small
+\begin{tabular}{cl}
+\toprule
+\textbf{Instant} & \textbf{Évènement} \\
+\midrule
+$t_1$ (2017) & Artiste indépendant \\
+$t_2$ (2018) & Signe chez Universal \\
+$t_3$ (2019) & Sort l'album \emph{Guerilla} \\
+$t_4$ (2021) & Album certifié Platine \\
+$t_5$ (2023) & Sort un nouvel album \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Valuation \emph{V} :
+\code{artiste\_independant} = $\{t_1\}$,
+\code{sous\_contrat} = $\{t_2, t_3, t_4, t_5\}$,
+\code{album\_sorti} = $\{t_3, t_4, t_5\}$,
+\code{platine} = $\{t_4, t_5\}$,
+\code{en\_tournee} = $\{t_3, t_4\}$.
+
+\begin{table}[H]
+\centering
+\caption{Requêtes temporelles --- carrière musicale}
+\begin{tabularx}{\linewidth}{clcX}
+\toprule
+\textbf{\#} & \textbf{Formule} & \textbf{Résultat} & \textbf{Justification} \\
+\midrule
+Q1 & $\mathbf{G}\,\text{platine}$ en $t_4$
+   & \textcolor{codegreen}{\textbf{VRAI}}
+   & futur de $t_4$ = $\{t_5\}$, platine vrai en $t_5$ \\
+Q2 & $\mathbf{F}\,\text{sous\_contrat}$ en $t_1$
+   & \textcolor{codegreen}{\textbf{VRAI}}
+   & sous\_contrat vrai en $t_2$ (signe Universal) \\
+Q3 & $\mathbf{H}\,\text{artiste\_independant}$ en $t_2$
+   & \textcolor{codegreen}{\textbf{VRAI}}
+   & passé de $t_2 = \{t_1\}$, vrai en $t_1$ \\
+Q4 & $\mathbf{P}\,\text{album\_sorti}$ en $t_5$
+   & \textcolor{codegreen}{\textbf{VRAI}}
+   & album\_sorti vrai dès $t_3$ \\
+Q5 & $\mathbf{G}\,\text{en\_tournee}$ en $t_3$
+   & \textcolor{red}{\textbf{FAUX}}
+   & en\_tournee vrai en $t_4$ mais faux en $t_5$ \\
+Q6 & $\mathbf{H}\,\text{sous\_contrat}$ en $t_5$
+   & \textcolor{red}{\textbf{FAUX}}
+   & sous\_contrat faux en $t_1$ (indépendant) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Application --- déroulement d'un procès}
+
+Six instants chronologiques modélisent les étapes d'une procédure judiciaire
+complète pour le cas d'Omar (récidiviste arrêté puis condamné) :
+$t_1$ (infraction) $\to$ $t_2$ (arrestation) $\to$ $t_3$ (inculpation) $\to$
+$t_4$ (audience) $\to$ $t_5$ (verdict) $\to$ $t_6$ (libération après peine
+purgée). Ce domaine est particulièrement intéressant car \emph{la vérité de
+plusieurs propositions change} au cours de la procédure :
+
+\begin{center}\small
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Atome} & $t_1$ & $t_2$ & $t_3$ & $t_4$ & $t_5$ & $t_6$ \\
+\midrule
+libre              & V & . & . & . & . & V \\
+en\_detention      & . & V & V & V & V & . \\
+accuse             & . & . & V & V & . & . \\
+condamne           & . & . & . & . & V & V \\
+presume\_innocent  & V & V & V & V & . & . \\
+droit\_avocat      & . & V & V & V & V & V \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{table}[H]
+\centering
+\caption{Requêtes temporelles --- procédure judiciaire}
+\begin{tabularx}{\linewidth}{clcX}
+\toprule
+\textbf{\#} & \textbf{Formule} & \textbf{Résultat} & \textbf{Justification} \\
+\midrule
+Q1 & $\mathbf{F}\,\text{condamne}$ en $t_1$
+   & \textcolor{codegreen}{\textbf{VRAI}}
+   & condamne vrai en $t_5$ (verdict) \\
+Q2 & $\mathbf{H}\,\text{libre}$ en $t_3$
+   & \textcolor{red}{\textbf{FAUX}}
+   & libre faux en $t_2$ (détention) \\
+Q3 & $\mathbf{H}\,\text{presume\_innocent}$ en $t_4$
+   & \textcolor{codegreen}{\textbf{VRAI}}
+   & présomption d'innocence garantie avant verdict \\
+Q4 & $\mathbf{G}\,\text{presume\_innocent}$ en $t_5$
+   & \textcolor{red}{\textbf{FAUX}}
+   & faux en $t_6$ (déjà condamné) \\
+Q5 & $\mathbf{F}\,\text{libre}$ en $t_3$
+   & \textcolor{codegreen}{\textbf{VRAI}}
+   & libre en $t_6$ : même un condamné sera libre après sa peine \\
+Q6 & $\mathbf{G}\,\text{libre}$ en $t_6$
+   & \textcolor{codegreen}{\textbf{VRAI}}
+   & futur de $t_6$ = $\emptyset$, quantification universelle vide \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Implémentation}
+
+L'extension temporelle est codée en \textbf{Java pur} dans le sous-package
+\code{rcr.modal.temporal} (\file{TemporalLogicMusic.java},
+\file{TemporalLogicJustice.java}). TweetyProject ne fournit pas d'opérateurs
+temporels natifs ; la sémantique du cours étant simple (ordre linéaire fini),
+nous implémentons directement l'évaluation par parcours de la liste ordonnée
+des instants.
+
+\begin{lstlisting}[caption={Opérateurs temporels G, F, H, P (extrait)}]
+// Instants ordonnes chronologiquement : t1 < t2 < ... < t5
+static final List<String> INSTANTS = Arrays.asList("t1","t2","t3","t4","t5");
+
+// Valuation : atome -> instants ou il est vrai
+static final Map<String, Set<String>> V = new LinkedHashMap<>();
+
+private static List<String> futurs(String t) {
+    int i = INSTANTS.indexOf(t);
+    return INSTANTS.subList(i + 1, INSTANTS.size());
+}
+private static List<String> passes(String t) {
+    int i = INSTANTS.indexOf(t);
+    return INSTANTS.subList(0, i);
+}
+private static boolean vrai(String atom, String t) {
+    return V.getOrDefault(atom, Collections.emptySet()).contains(t);
+}
+
+/** G p en t : p sera TOUJOURS vrai dans le futur strict de t. */
+static boolean G(String atom, String t) {
+    for (String s : futurs(t)) if (!vrai(atom, s)) return false;
+    return true;
+}
+
+/** F p en t : p sera vrai A UN MOMENT dans le futur strict de t. */
+static boolean F(String atom, String t) {
+    for (String s : futurs(t)) if (vrai(atom, s)) return true;
+    return false;
+}
+
+// H et P : symetriques avec passes(t) au lieu de futurs(t).
+\end{lstlisting}
+
+\noindent L'orchestrateur \code{ModalLogicExample} appelle automatiquement la
+section temporelle après la modale classique, ce qui produit une exécution
+console unifiée pour le chapitre~3 du cours.

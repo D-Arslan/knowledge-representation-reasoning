@@ -218,6 +218,62 @@ Q5 & $\nec(\text{album} \to \text{contrat})$ & $w_1$ & \textbf{FAUX} (faux en $w
 non réflexive, non transitive, non symétrique, mais \emph{sérielle}
 (chaque monde a au moins un successeur).
 
+\subsection*{Extension temporelle (cours chap. 3)}
+
+La logique modale temporelle spécialise $R$ en \emph{ordre temporel} :
+les mondes deviennent des \emph{instants}, et la relation $<$ correspond au
+passage du temps. On ajoute quatre opérateurs :
+\[
+\textbf{G}\,p\ (\text{Going-to}) = \nec\,\text{futur}
+\qquad
+\textbf{F}\,p\ (\text{Futur}) = \pos\,\text{futur}
+\qquad
+\textbf{H}\,p\ (\text{Has-been}) = \nec\,\text{passé}
+\qquad
+\textbf{P}\,p\ (\text{Past}) = \pos\,\text{passé}
+\]
+
+\paragraph{Domaine musique --- carrière de Soolking.}
+Cinq instants $t_1 < t_2 < t_3 < t_4 < t_5$ : 2017 (indépendant), 2018 (signe
+chez Universal), 2019 (sort \emph{Guerilla}), 2021 (album platine), 2023
+(nouvel album). Quelques requêtes :
+
+\begin{center}\small
+\begin{tabular}{cllc}
+\toprule
+\textbf{\#} & \textbf{Formule} & \textbf{Instant} & \textbf{Résultat} \\
+\midrule
+Q1 & $\mathbf{G}\,\text{platine}$            & $t_4$ & \textbf{VRAI} (vrai aussi en $t_5$) \\
+Q2 & $\mathbf{F}\,\text{sous\_contrat}$      & $t_1$ & \textbf{VRAI} (signe Universal en $t_2$) \\
+Q3 & $\mathbf{H}\,\text{artiste\_indep.}$    & $t_2$ & \textbf{VRAI} (vrai en $t_1$) \\
+Q4 & $\mathbf{P}\,\text{album\_sorti}$       & $t_5$ & \textbf{VRAI} (sorti en $t_3$) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Domaine justice --- déroulement d'un procès.}
+Six instants $t_1 < \ldots < t_6$ : infraction, arrestation, inculpation,
+audience, verdict, libération. Démonstration de \emph{changement de vérité
+au cours du temps} :
+
+\begin{center}\small
+\begin{tabular}{cllc}
+\toprule
+\textbf{\#} & \textbf{Formule} & \textbf{Instant} & \textbf{Résultat} \\
+\midrule
+Q1 & $\mathbf{F}\,\text{condamne}$          & $t_1$ & \textbf{VRAI} (verdict en $t_5$) \\
+Q2 & $\mathbf{H}\,\text{libre}$             & $t_3$ & \textbf{FAUX} (en détention dès $t_2$) \\
+Q3 & $\mathbf{H}\,\text{presume\_innocent}$ & $t_4$ & \textbf{VRAI} (présomption d'innocence avant verdict) \\
+Q4 & $\mathbf{F}\,\text{libre}$             & $t_3$ & \textbf{VRAI} (libéré en $t_6$) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent \emph{Implémentation :} sous-package \code{rcr.modal.temporal}
+(\code{TemporalLogicMusic.java}, \code{TemporalLogicJustice.java}).
+Évaluation directe en Java pur sur une liste ordonnée d'instants
+(Tweety ne supporte pas nativement les opérateurs temporels).
+
 \newpage
 % ============================================================
 \section{TP~2 --- Logique des Défauts}
